@@ -1,6 +1,890 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <title>IDV Assignment 3 — Charts 7–11</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      margin: 0;
+      padding: 32px;
+      background: #eef4f4;
+    }
+    h1 {
+      margin: 0 0 8px;
+    }
+    .subtitle {
+      margin: 0 0 24px;
+      color: #4b5563;
+    }
+    .chart-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      padding: 20px;
+      margin-bottom: 28px;
+    }
+    .chart-title {
+      margin: 0 0 4px;
+    }
+    .chart-subtitle {
+      margin: 0 0 16px;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+    .note {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed #e5e7eb;
+      font-size: 0.9rem;
+      color: #374151;
+      line-height: 1.5;
+    }
+    .note strong {
+      color: #111827;
+    }
+    svg {
+      font-family: inherit;
+    }
+    .tooltip {
+      position: absolute;
+      background: rgba(17,24,39,0.95);
+      color: #f9fafb;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>IDV Assignment 3 — D3 Replications (Charts 7–11)</h1>
+  <p class="subtitle">
+    D3.js replications of Charts 7–11 from the assignment handout.  
+    Below each chart I document, step by step, how I built it with the help of a chatbot.
+  </p>
+
+  <!-- Chart 7 -->
+  <div class="chart-card">
+    <h2 class="chart-title">Chart 7 — Venn Diagram</h2>
+    <p class="chart-subtitle">Three-set Venn diagram with regions I–VII.</p>
+    <div id="chart7"></div>
+    <div class="note">
+      <strong>Process notes for Chart 7 (Venn diagram):</strong>
+      <ol>
+        <li>
+          First I showed the reference Venn diagram to the chatbot and asked how to recreate it using
+          plain SVG. We broke the figure into three circles with different centers and the same radius.
+          The chatbot suggested coordinates and I adjusted them manually until the overlaps looked
+          similar to the original.
+        </li>
+        <li>
+          Next, I asked how to label the regions I–VII. The chatbot proposed hard-coding the positions
+          of each label as text elements. I copied the suggested <code>x,y</code> values and then tweaked
+          them by trial and error so that each label visually sits in the correct overlapping area.
+        </li>
+        <li>
+          After the static diagram worked, I wanted some interaction. I asked specifically for
+          “hover effects that make each circle slightly larger and more opaque when the mouse is over it”.
+          The chatbot showed me how to use D3’s <code>on("mouseover")</code> and
+          <code>on("mouseout")</code> with transitions that change the radius and fill opacity.
+          I reused this pattern for all three circles.
+        </li>
+        <li>
+          Finally, I added simple text labels (“Delete”, “Replace”, “Rewrite”) above the three sets.
+          I used a short fade-in transition for both the region labels and set labels so that the chart
+          feels more alive when the page loads.
+        </li>
+      </ol>
+      <p>
+        In summary, this chart helped me practice positioning shapes by hand in SVG, and using D3
+        transitions to create subtle hover feedback without changing the underlying data.
+      </p>
+    </div>
+  </div>
+
+  <!-- Chart 8 -->
+  <div class="chart-card">
+    <h2 class="chart-title">Chart 8 — Cross Validation Accuracy Bars</h2>
+    <p class="chart-subtitle">Grouped bars with a solid accuracy bar and a dashed baseline bar for each model.</p>
+    <div id="chart8"></div>
+    <div class="note">
+      <strong>Process notes for Chart 8 (bar chart):</strong>
+      <ol>
+        <li>
+          I started by asking the chatbot to help me translate the reference figure into a small dataset
+          for three models (BERT, RoBERTa, BART) with two values each: the main accuracy and a lower
+          dashed baseline. We decided to store the numbers in a JavaScript array of objects.
+        </li>
+        <li>
+          With the data structure ready, I requested a basic D3 bar chart template. The chatbot
+          generated the usual pattern: define margins, width and height, create a band scale for the
+          x-axis, a linear scale for the y-axis, and append axes. I then inserted my own values and
+          axis labels.
+        </li>
+        <li>
+          To match the visual style of the assignment chart, I asked how to draw a solid bar plus a
+          dashed “outline bar” on top. The chatbot suggested drawing one rectangle for the solid bar
+          and a second rectangle with <code>fill="none"</code> and <code>stroke-dasharray</code>
+          for the dashed baseline. I used slight horizontal offsets so the shapes overlap cleanly.
+        </li>
+        <li>
+          For interaction, I requested a hover effect where the bar becomes taller and lighter,
+          and also shows a tooltip with the exact percentage. The chatbot showed me how to attach a
+          mouseover handler that changes <code>y</code>, <code>height</code>, and <code>fill</code>,
+          and how to use a shared tooltip <code>&lt;div&gt;</code> positioned with <code>event.pageX</code>
+          and <code>event.pageY</code>. I reused the same tooltip pattern across charts.
+        </li>
+        <li>
+          As a final touch, we added a simple load-in animation where bars grow from height 0.
+          This gave me practice with D3 transitions and also made the chart feel less static.
+        </li>
+      </ol>
+      <p>
+        Through this chart I reinforced the full D3 “pipeline”: mapping data to scales, drawing rectangles,
+        and layering interactions (tooltips and animated transitions) step by step.
+      </p>
+    </div>
+  </div>
+
+  <!-- Chart 9 -->
+  <div class="chart-card">
+    <h2 class="chart-title">Chart 9 — Sketch to SVG Figure</h2>
+    <p class="chart-subtitle">Line-drawing style character sitting on a block.</p>
+    <div id="chart9"></div>
+    <div class="note">
+      <strong>Process notes for Chart 9 (sketch to SVG):</strong>
+      <ol>
+        <li>
+          I showed the hand-drawn reference sketch to the chatbot and asked how to “translate this into
+          basic SVG shapes”. We decomposed the figure into rectangles (block and head), straight lines
+          (body, arms, legs, stick) and small circles (hands). This step was more about thinking in
+          geometry than about data.
+        </li>
+        <li>
+          The chatbot proposed approximate coordinates for each segment. I pasted the code into my
+          <code>index.html</code> and repeatedly refreshed the browser, moving points a few pixels at a time
+          until the posture of the character looked close to the original sketch.
+        </li>
+        <li>
+          To make it more than just a static drawing, I asked how to add a simple animation.
+          We decided to let the whole group fade in from 0 to full opacity, and to make the strokes
+          slightly thicker when the mouse hovers over the illustration. This only required changing the
+          group’s <code>stroke-width</code> inside <code>mouseover</code> and <code>mouseout</code> handlers.
+        </li>
+        <li>
+          Compared to the other charts, this one does not have numeric data. However, it trained me to
+          think about how complex visual designs can be broken down into reusable primitives that D3 can
+          manipulate just like any other shape.
+        </li>
+      </ol>
+      <p>
+        Overall, this chart documents my experience of turning a freehand drawing into clean SVG code,
+        with the chatbot guiding me through the coordinate system and the minimal amount of code needed
+        to get a similar look.
+      </p>
+    </div>
+  </div>
+
+  <!-- Chart 10 -->
+  <div class="chart-card">
+    <h2 class="chart-title">Chart 10 — Map with Highlighted Region</h2>
+    <p class="chart-subtitle">Abstract map with four land masses and a red focus ellipse.</p>
+    <div id="chart10"></div>
+    <div class="note">
+      <strong>Process notes for Chart 10 (abstract map):</strong>
+      <ol>
+        <li>
+          For this chart I explained to the chatbot that I did not need a real geographic map, only a
+          stylised version matching the handout: a light grid, several yellow land shapes and a red
+          ellipse indicating the focus region. The chatbot suggested using a fixed SVG coordinate system
+          and drawing polygons with hard-coded points.
+        </li>
+        <li>
+          We first implemented the background grid using two loops that draw vertical and horizontal
+          lines every fixed number of pixels. Seeing this work gave me an intuitive sense that the SVG
+          coordinate system is like a simple Cartesian plane.
+        </li>
+        <li>
+          Next, the chatbot helped me define four polygon point lists for the land masses. I pasted its
+          initial guesses and then manually adjusted the coordinates so that the shapes and gaps roughly
+          resembled the original figure. The red ellipse was placed by eye at the center of the main
+          cluster.
+        </li>
+        <li>
+          To add interaction, I requested hover effects on the land shapes. The chatbot proposed
+          changing the fill colour slightly brighter on <code>mouseover</code>. We also added a gentle
+          zoom-in animation of the whole map group on load, which is implemented as a transition on the
+          <code>transform: scale()</code> value.
+        </li>
+      </ol>
+      <p>
+        This chart was mainly an exercise in controlling SVG coordinates, using loops to draw grids,
+        and applying hover feedback to non-data-driven shapes while still using D3’s selection and
+        transition APIs.
+      </p>
+    </div>
+  </div>
+
+  <!-- Chart 11 -->
+  <div class="chart-card">
+    <h2 class="chart-title">Chart 11 — Probability Density Functions</h2>
+    <p class="chart-subtitle">Two Gaussian curves with a shaded overlapping region and vertical reference lines.</p>
+    <div id="chart11"></div>
+    <div class="note">
+      <strong>Process notes for Chart 11 (function plot):</strong>
+      <ol>
+        <li>
+          I told the chatbot that the original chart looked like two normal distributions with some
+          overlapping area. It suggested writing a JavaScript <code>gaussian()</code> function that
+          takes <code>x</code>, mean and standard deviation and returns the probability density.
+          We then sampled this function on a fine <code>x</code> grid using <code>d3.range()</code>.
+        </li>
+        <li>
+          The chatbot provided a D3 line generator that maps each sampled point into SVG coordinates.
+          I copied the code twice, once for each curve with different means and sigmas, and adjusted the
+          domain of the x- and y-scales so the curves fit nicely inside the viewBox.
+        </li>
+        <li>
+          To recreate the shaded overlap, the chatbot proposed building a third dataset whose y-value
+          is <code>min(y0, y1)</code> at each x. Using <code>d3.area()</code>, we filled this region
+          with a semi-transparent grey polygon. Later, I added a hover effect that darkens the overlap
+          slightly to draw attention to the ambiguous region.
+        </li>
+        <li>
+          I asked specifically for a “line drawing” animation. The chatbot taught me how to obtain the
+          total path length using <code>getTotalLength()</code> and then use
+          <code>stroke-dasharray</code> and <code>stroke-dashoffset</code> transitions so that each
+          curve appears to be drawn over time. I reused this trick for both curves with different delays.
+        </li>
+        <li>
+          Finally, we added vertical dashed reference lines and a small legend that labels each curve as
+          <code>p(x, y = 0) * v(x)</code> and <code>p(x, y = 1) * v(x)</code>. This gave the figure a
+          more “textbook” look, similar to the assignment handout.
+        </li>
+      </ol>
+      <p>
+        This chart combined several ideas from previous ones: analytic functions, area fills, animations,
+        and basic annotation, all constructed gradually with the guidance of the chatbot and iterative
+        testing in the browser.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Shared tooltip (for bar chart)
+    const tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    // =========================
+    // Chart 7: Venn diagram
+    // =========================
+    function drawChart7() {
+      const width = 420;
+      const height = 260;
+
+      const svg = d3.select("#chart7")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      const g = svg.append("g")
+        .attr("transform", "translate(0,10)");
+
+      const circles = [
+        { id: "A", cx: 150, cy: 120, r: 80, color: "#c4b5fd", label: "Delete" },
+        { id: "B", cx: 220, cy: 80,  r: 80, color: "#bfdbfe", label: "Replace" },
+        { id: "C", cx: 260, cy: 140, r: 80, color: "#fde68a", label: "Rewrite" }
+      ];
+
+      const circleSelection = g.selectAll("circle.venn")
+        .data(circles)
+        .enter()
+        .append("circle")
+        .attr("class", "venn")
+        .attr("cx", d => d.cx)
+        .attr("cy", d => d.cy)
+        .attr("r", 0)
+        .attr("fill", d => d.color)
+        .attr("fill-opacity", 0.2)
+        .attr("stroke", "#4b5563")
+        .attr("stroke-width", 1)
+        .on("mouseover", function(event, d) {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("r", d.r + 6)
+            .attr("fill-opacity", 0.8);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("r", d.r)
+            .attr("fill-opacity", 0.55);
+        });
+
+      // grow circles on load
+      circleSelection
+        .transition()
+        .duration(800)
+        .attr("r", d => d.r)
+        .attr("fill-opacity", 0.55);
+
+      const labels = [
+        { text: "I",  x: 90,  y: 140 },
+        { text: "II", x: 220, y: 30 },
+        { text: "III",x: 330, y: 145 },
+        { text: "IV", x: 165, y: 115 },
+        { text: "V",  x: 235, y: 110 },
+        { text: "VI", x: 205, y: 150 },
+        { text: "VII",x: 220, y: 130 }
+      ];
+
+      g.selectAll("text.region")
+        .data(labels)
+        .enter()
+        .append("text")
+        .attr("class", "region")
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .style("font-size", "13px")
+        .style("fill", "#111827")
+        .style("opacity", 0)
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1)
+        .text(d => d.text);
+
+      g.append("text")
+        .attr("x", 70)
+        .attr("y", 30)
+        .style("font-size", "12px")
+        .style("opacity", 0)
+        .text("Delete")
+        .transition().delay(700).duration(500).style("opacity", 1);
+
+      g.append("text")
+        .attr("x", 210)
+        .attr("y", 20)
+        .style("font-size", "12px")
+        .style("opacity", 0)
+        .text("Replace")
+        .transition().delay(700).duration(500).style("opacity", 1);
+
+      g.append("text")
+        .attr("x", 330)
+        .attr("y", 40)
+        .style("font-size", "12px")
+        .style("opacity", 0)
+        .text("Rewrite")
+        .transition().delay(700).duration(500).style("opacity", 1);
+    }
+
+    // =========================
+    // Chart 8: Simple bars
+    // =========================
+    function drawChart8() {
+      const data = [
+        { model: "BERT",    base: 74.4, dashed: 64.8 },
+        { model: "RoBERTa", base: 81.9, dashed: 65.5 },
+        { model: "BART",    base: 73.1, dashed: 63.5 }
+      ];
+
+      const margin = { top: 40, right: 20, bottom: 40, left: 40 };
+      const width  = 420 - margin.left - margin.right;
+      const height = 240 - margin.top - margin.bottom;
+
+      const svg = d3.select("#chart8")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.model))
+        .range([0, width])
+        .padding(0.4);
+
+      const y = d3.scaleLinear()
+        .domain([0, 100])
+        .nice()
+        .range([height, 0]);
+
+      svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x));
+
+      svg.append("g")
+        .call(d3.axisLeft(y).ticks(5));
+
+      svg.append("line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", height)
+        .attr("y2", height)
+        .attr("stroke", "#111827")
+        .attr("stroke-width", 1);
+
+      const bars = svg.selectAll(".bar-base")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar-base")
+        .attr("x", d => x(d.model))
+        .attr("width", x.bandwidth())
+        .attr("y", height)
+        .attr("height", 0)
+        .attr("fill", "#f9e4a4")
+        .attr("stroke", "#b38f3b")
+        .attr("stroke-width", 0.8)
+        .on("mouseover", function(event, d) {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("y", y(d.base) - 5)
+            .attr("height", height - y(d.base) + 5)
+            .attr("fill", "#fde68a");
+          tooltip
+            .style("opacity", 1)
+            .html(`<strong>${d.model}</strong><br/>Accuracy: ${d.base}%`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("y", y(d.base))
+            .attr("height", height - y(d.base))
+            .attr("fill", "#f9e4a4");
+          tooltip.style("opacity", 0);
+        });
+
+      // load animation
+      bars.transition()
+        .delay((d, i) => i * 200)
+        .duration(800)
+        .attr("y", d => y(d.base))
+        .attr("height", d => height - y(d.base));
+
+      svg.selectAll(".bar-dashed")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar-dashed")
+        .attr("x", d => x(d.model) + x.bandwidth() * 0.1)
+        .attr("width", x.bandwidth() * 0.8)
+        .attr("y", d => y(d.dashed))
+        .attr("height", d => height - y(d.dashed))
+        .attr("fill", "none")
+        .attr("stroke", "#d4b866")
+        .attr("stroke-dasharray", "4,3")
+        .attr("stroke-width", 1.2)
+        .style("opacity", 0)
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      svg.selectAll(".label-base")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "label-base")
+        .attr("x", d => x(d.model) + x.bandwidth() / 2)
+        .attr("y", d => y(d.base) - 6)
+        .attr("text-anchor", "middle")
+        .style("font-size", "11px")
+        .style("opacity", 0)
+        .text(d => d.base.toFixed(1))
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      svg.selectAll(".label-dashed")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "label-dashed")
+        .attr("x", d => x(d.model) + x.bandwidth() / 2)
+        .attr("y", d => y(d.dashed) + 12)
+        .attr("text-anchor", "middle")
+        .style("font-size", "10px")
+        .style("fill", "#6b7280")
+        .style("opacity", 0)
+        .text(d => d.dashed.toFixed(1))
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", -15)
+        .attr("text-anchor", "middle")
+        .style("font-size", "13px")
+        .style("font-weight", "bold")
+        .text("Cross Validation Accuracy (%)");
+    }
+
+    // =========================
+    // Chart 9: Sketch to SVG
+    // =========================
+    function drawChart9() {
+      const width = 360;
+      const height = 220;
+
+      const svg = d3.select("#chart9")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background", "#f9fafb");
+
+      const g = svg.append("g")
+        .attr("transform", "translate(40,15)")
+        .attr("stroke", "#4b5563")
+        .attr("fill", "none")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-linejoin", "round")
+        .style("opacity", 0);
+
+      // block
+      g.append("rect")
+        .attr("x", 30)
+        .attr("y", 110)
+        .attr("width", 220)
+        .attr("height", 40)
+        .attr("fill", "#e5e7eb")
+        .attr("stroke-width", 1.2);
+
+      // body
+      g.append("line").attr("x1", 140).attr("y1", 80).attr("x2", 140).attr("y2", 120).attr("stroke-width", 1.5);
+
+      // head
+      g.append("rect")
+        .attr("x", 115)
+        .attr("y", 30)
+        .attr("width", 50)
+        .attr("height", 40)
+        .attr("fill", "#f3f4f6")
+        .attr("stroke-width", 1.5);
+
+      // face
+      g.append("line").attr("x1", 125).attr("y1", 48).attr("x2", 135).attr("y2", 48);
+      g.append("line").attr("x1", 146).attr("y1", 48).attr("x2", 156).attr("y2", 48);
+      g.append("line").attr("x1", 130).attr("y1", 58).attr("x2", 150).attr("y2", 58);
+
+      // legs
+      g.append("line").attr("x1", 140).attr("y1", 120).attr("x2", 120).attr("y2", 150);
+      g.append("line").attr("x1", 120).attr("y1", 150).attr("x2", 115).attr("y2", 165);
+      g.append("line").attr("x1", 140).attr("y1", 120).attr("x2", 155).attr("y2", 150);
+      g.append("line").attr("x1", 155).attr("y1", 150).attr("x2", 160).attr("y2", 165);
+
+      // arms & stick
+      g.append("line").attr("x1", 140).attr("y1", 90).attr("x2", 110).attr("y2", 110);
+      g.append("line").attr("x1", 140).attr("y1", 90).attr("x2", 170).attr("y2", 105);
+      g.append("line").attr("x1", 105).attr("y1", 108).attr("x2", 185).attr("y2", 130);
+
+      // hand circles
+      g.append("circle").attr("cx", 110).attr("cy", 110).attr("r", 3).attr("fill", "#4b5563");
+      g.append("circle").attr("cx", 170).attr("cy", 105).attr("r", 3).attr("fill", "#4b5563");
+
+      // fade-in
+      g.transition()
+        .duration(800)
+        .style("opacity", 1);
+
+      // hover: stroke width change
+      g.on("mouseover", function() {
+          d3.select(this).transition().duration(150).attr("stroke-width", 2);
+        })
+        .on("mouseout", function() {
+          d3.select(this).transition().duration(150).attr("stroke-width", 1.2);
+        });
+    }
+
+    // =========================
+    // Chart 10: Map
+    // =========================
+    function drawChart10() {
+      const width = 360;
+      const height = 260;
+
+      const svg = d3.select("#chart10")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background", "#f9fafb");
+
+      const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top}) scale(0.8)`)
+        .style("opacity", 0.2);
+
+      const step = 24;
+      for (let x = 0; x <= innerWidth; x += step) {
+        g.append("line")
+          .attr("x1", x)
+          .attr("y1", 0)
+          .attr("x2", x)
+          .attr("y2", innerHeight)
+          .attr("stroke", "#e5e7eb")
+          .attr("stroke-width", 0.6);
+      }
+      for (let y = 0; y <= innerHeight; y += step) {
+        g.append("line")
+          .attr("x1", 0)
+          .attr("y1", y)
+          .attr("x2", innerWidth)
+          .attr("y2", y)
+          .attr("stroke", "#e5e7eb")
+          .attr("stroke-width", 0.6);
+      }
+
+      const land = [
+        [[40, 40],[110, 35],[140, 60],[120, 110],[60, 100]],
+        [[170, 50],[240, 45],[260, 80],[230, 110],[185, 95]],
+        [[70, 150],[120, 145],[150, 175],[130, 210],[80, 200]],
+        [[190, 150],[250, 160],[260, 195],[220, 210],[190, 190]]
+      ];
+
+      g.selectAll("polygon.land")
+        .data(land)
+        .enter()
+        .append("polygon")
+        .attr("class", "land")
+        .attr("points", d => d.map(p => p.join(",")).join(" "))
+        .attr("fill", "#f4d7a4")
+        .attr("stroke", "#d1a65a")
+        .attr("stroke-width", 0.8)
+        .on("mouseover", function() {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("fill", "#fde7b4");
+        })
+        .on("mouseout", function() {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("fill", "#f4d7a4");
+        });
+
+      g.append("ellipse")
+        .attr("cx", innerWidth * 0.55)
+        .attr("cy", innerHeight * 0.45)
+        .attr("rx", 90)
+        .attr("ry", 70)
+        .attr("fill", "none")
+        .attr("stroke", "#dc2626")
+        .attr("stroke-width", 2);
+
+      // zoom + fade-in
+      g.transition()
+        .duration(900)
+        .attr("transform", `translate(${margin.left},${margin.top}) scale(1)`)
+        .style("opacity", 1);
+
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 16)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .text("Abstract Map with Focus Region");
+    }
+
+    // =========================
+    // Chart 11: Functions
+    // =========================
+    function drawChart11() {
+      const margin = { top: 30, right: 20, bottom: 40, left: 45 };
+      const width  = 420 - margin.left - margin.right;
+      const height = 260 - margin.top - margin.bottom;
+
+      const svg = d3.select("#chart11")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scaleLinear()
+        .domain([-2, 5])
+        .range([0, width]);
+
+      const y = d3.scaleLinear()
+        .domain([0, 0.35])
+        .range([height, 0]);
+
+      svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(7));
+
+      svg.append("g")
+        .call(d3.axisLeft(y).ticks(5));
+
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 32)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .text("x");
+
+      svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -32)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .text("Probability Density");
+
+      function gaussian(xVal, mu, sigma) {
+        const coeff = 1 / (Math.sqrt(2 * Math.PI) * sigma);
+        const expo  = -Math.pow(xVal - mu, 2) / (2 * sigma * sigma);
+        return coeff * Math.exp(expo);
+      }
+
+      const xs = d3.range(-2, 5.01, 0.05);
+
+      const data0 = xs.map(d => ({ x: d, y: gaussian(d, 0.2, 0.9) }));
+      const data1 = xs.map(d => ({ x: d, y: gaussian(d, 1.8, 0.8) }));
+
+      const lineGen = d3.line()
+        .x(d => x(d.x))
+        .y(d => y(d.y));
+
+      const overlap = xs.map(d => {
+        const y0 = gaussian(d, 0.2, 0.9);
+        const y1 = gaussian(d, 1.8, 0.8);
+        return { x: d, y: Math.min(y0, y1) };
+      });
+
+      const areaOverlap = d3.area()
+        .x(d => x(d.x))
+        .y0(y(0))
+        .y1(d => y(d.y));
+
+      const overlapPath = svg.append("path")
+        .datum(overlap)
+        .attr("fill", "#9ca3af")
+        .attr("opacity", 0)
+        .attr("d", areaOverlap);
+
+      overlapPath
+        .transition()
+        .duration(700)
+        .attr("opacity", 0.5);
+
+      const path0 = svg.append("path")
+        .datum(data0)
+        .attr("fill", "none")
+        .attr("stroke", "#f59e0b")
+        .attr("stroke-width", 2)
+        .attr("d", lineGen)
+        .on("mouseover", function() {
+          d3.select(this).transition().duration(150).attr("stroke-width", 3);
+        })
+        .on("mouseout", function() {
+          d3.select(this).transition().duration(150).attr("stroke-width", 2);
+        });
+
+      const length0 = path0.node().getTotalLength();
+      path0
+        .attr("stroke-dasharray", length0 + " " + length0)
+        .attr("stroke-dashoffset", length0)
+        .transition()
+        .delay(400)
+        .duration(900)
+        .attr("stroke-dashoffset", 0);
+
+      const path1 = svg.append("path")
+        .datum(data1)
+        .attr("fill", "none")
+        .attr("stroke", "#0ea5e9")
+        .attr("stroke-width", 2)
+        .attr("d", lineGen)
+        .on("mouseover", function() {
+          d3.select(this).transition().duration(150).attr("stroke-width", 3);
+        })
+        .on("mouseout", function() {
+          d3.select(this).transition().duration(150).attr("stroke-width", 2);
+        });
+
+      const length1 = path1.node().getTotalLength();
+      path1
+        .attr("stroke-dasharray", length1 + " " + length1)
+        .attr("stroke-dashoffset", length1)
+        .transition()
+        .delay(700)
+        .duration(900)
+        .attr("stroke-dashoffset", 0);
+
+      // hover on overlap area
+      overlapPath
+        .on("mouseover", function() {
+          d3.select(this).transition().duration(150).attr("opacity", 0.8);
+        })
+        .on("mouseout", function() {
+          d3.select(this).transition().duration(150).attr("opacity", 0.5);
+        });
+
+      const vlines = [0, 1, 2];
+      svg.selectAll(".vline")
+        .data(vlines)
+        .enter()
+        .append("line")
+        .attr("class", "vline")
+        .attr("x1", d => x(d))
+        .attr("x2", d => x(d))
+        .attr("y1", height)
+        .attr("y2", 0)
+        .attr("stroke", "#6b7280")
+        .attr("stroke-dasharray", "4,3")
+        .attr("stroke-width", 1);
+
+      const legend = svg.append("g")
+        .attr("transform", `translate(${width - 160}, 10)`);
+
+      legend.append("line")
+        .attr("x1", 0).attr("y1", 0)
+        .attr("x2", 26).attr("y2", 0)
+        .attr("stroke", "#f59e0b")
+        .attr("stroke-width", 2);
+      legend.append("text")
+        .attr("x", 32).attr("y", 3)
+        .style("font-size", "11px")
+        .text("p(x, y = 0) * v(x)");
+
+      legend.append("line")
+        .attr("x1", 0).attr("y1", 16)
+        .attr("x2", 26).attr("y2", 16)
+        .attr("stroke", "#0ea5e9")
+        .attr("stroke-width", 2);
+      legend.append("text")
+        .attr("x", 32).attr("y", 19)
+        .style("font-size", "11px")
+        .text("p(x, y = 1) * v(x)");
+    }
+
+    // Draw all charts
+    drawChart7();
+    drawChart8();
+    drawChart9();
+    drawChart10();
+    drawChart11();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assignment 4 - Adversarial Attack Heatmap</title>
