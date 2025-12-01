@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 4 - Adversarial Attack Heatmap</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 95vw;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .analysis-section {
+            text-align: left;
+            line-height: 1.6;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        .analysis-section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        .analysis-section p {
+            margin: 12px 0;
+        }
+        .analysis-section ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .analysis-section li {
+            margin: 6px 0;
+        }
+        .analysis-section strong {
+            color: #2980b9;
+        }
+        .legend {
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .color-bar {
+            display: inline-block;
+            width: 250px;
+            height: 20px;
+            background: linear-gradient(to right, #e74c3c, #f1c40f, #27ae60);
+            margin: 0 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .axis text {
+            font-size: 10px;
+        }
+        .cell {
+            stroke: #fff;
+            stroke-width: 1;
+        }
+        .cell:hover {
+            stroke: #2c3e50;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Machine Learning Model Robustness Analysis</h1>
+        
+        <div class="analysis-section">
+            <h3>📈 Visualization Overview</h3>
+            <p><strong>Data Background:</strong> This heatmap visualizes the robustness of 9 machine learning defense methods against 26 different adversarial attacks. Each cell color represents the classification accuracy of a model under a specific attack scenario.</p>
+            
+            <p><strong>Interactive Features:</strong>
+            <ul>
+                <li>🎯 <strong>Mouse Hover</strong> - View detailed data for any cell (attack method, defense method, accuracy rate)</li>
+                <li>🌈 <strong>Color Interpretation</strong> - Red (0-30%) indicates weak defense, Yellow (30-70%) moderate performance, Green (70-100%) strong defense</li>
+                <li>📊 <strong>Pattern Recognition</strong> - Observe color trends across rows/columns to analyze overall effectiveness of specific attacks or defenses</li>
+            </ul>
+            </p>
+
+            <p><strong>Key Insights:</strong>
+            <ul>
+                <li>🛡️ <strong>Best Defense</strong> - TandT method maintains high accuracy against most attacks (most green cells)</li>
+                <li>⚔️ <strong>Strongest Attacks</strong> - MIFGSM, APGD methods effectively reduce accuracy of most defenses</li>
+                <li>🎯 <strong>Targeted Effectiveness</strong> - Certain attacks work particularly well against specific defenses (e.g., Pixle attack affects all defenses)</li>
+            </ul>
+            </p>
+        </div>
+        
+        <div id="chart"></div>
+        
+        <div class="legend">
+            <span><strong>Low Accuracy (0%)</strong></span>
+            <div class="color-bar"></div>
+            <span><strong>High Accuracy (100%)</strong></span>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const data = {
+            "No Attack": {"ERM": 94.85, "DA": 94.21, "PGDT": 84.38, "TRADES": 80.42, "MART": 81.54, "RS": 89.45, "IBP": 48.4, "PRL": 93.82, "TandT": 94.23},
+            "TIFGSM": {"ERM": 35.1, "DA": 33.0, "PGDT": 65.7, "TRADES": 62.9, "MART": 69.1, "RS": 45.4, "IBP": 40.2, "PRL": 34.0, "TandT": 92.8},
+            "MIFGSM": {"ERM": 0.0, "DA": 0.0, "PGDT": 50.9, "TRADES": 51.9, "MART": 50.5, "RS": 5.8, "IBP": 38.1, "PRL": 0.0, "TandT": 92.8},
+            "DIFGSM": {"ERM": 1.0, "DA": 0.0, "PGDT": 51.75, "TRADES": 50.5, "MART": 53.6, "RS": 4.1, "IBP": 38.1, "PRL": 3.1, "TandT": 92.8},
+            "VMIFGSM": {"ERM": 0.0, "DA": 0.0, "PGDT": 51.1, "TRADES": 50.9, "MART": 51.9, "RS": 4.1, "IBP": 38.1, "PRL": 0.0, "TandT": 93.9},
+            "TPGD": {"ERM": 38.1, "DA": 39.2, "PGDT": 69.3, "TRADES": 69.1, "MART": 70.1, "RS": 48.5, "IBP": 50.0, "PRL": 28.9, "TandT": 91.8},
+            "FGSM": {"ERM": 29.9, "DA": 25.8, "PGDT": 57.95, "TRADES": 54.6, "MART": 61.9, "RS": 28.9, "IBP": 38.1, "PRL": 25.8, "TandT": 93.8},
+            "RFGSM": {"ERM": 0.0, "DA": 0.0, "PGDT": 49.15, "TRADES": 50.4, "MART": 48.5, "RS": 3.7, "IBP": 38.1, "PRL": 0.0, "TandT": 90.0},
+            "BIM": {"ERM": 0.0, "DA": 0.0, "PGDT": 52.0, "TRADES": 57.2, "MART": 47.4, "RS": 2.1, "IBP": 38.1, "PRL": 0.0, "TandT": 90.7},
+            "FAB": {"ERM": 1.0, "DA": 2.1, "PGDT": 43.0, "TRADES": 46.4, "MART": 40.2, "RS": 5.3, "IBP": 38.1, "PRL": 4.1, "TandT": 90.1},
+            "CW": {"ERM": 0.0, "DA": 0.0, "PGDT": 32.2, "TRADES": 35.1, "MART": 29.9, "RS": 1.0, "IBP": 40.2, "PRL": 1.0, "TandT": 92.9},
+            "UPGD": {"ERM": 0.0, "DA": 0.0, "PGDT": 49.85, "TRADES": 50.5, "MART": 49.8, "RS": 5.1, "IBP": 38.1, "PRL": 0.0, "TandT": 93.8},
+            "FFGSM": {"ERM": 19.6, "DA": 23.7, "PGDT": 60.55, "TRADES": 55.7, "MART": 66.0, "RS": 33.0, "IBP": 42.3, "PRL": 29.9, "TandT": 92.8},
+            "Jitter": {"ERM": 11.3, "DA": 12.4, "PGDT": 48.15, "TRADES": 47.4, "MART": 49.5, "RS": 34.0, "IBP": 39.2, "PRL": 24.7, "TandT": 90.7},
+            "PGD": {"ERM": 0.0, "DA": 0.0, "PGDT": 57.4, "TRADES": 54.6, "MART": 60.8, "RS": 7.2, "IBP": 40.2, "PRL": 0.0, "TandT": 91.8},
+            "EOTPGD": {"ERM": 0.0, "DA": 0.0, "PGDT": 50.1, "TRADES": 50.3, "MART": 50.5, "RS": 3.0, "IBP": 38.1, "PRL": 0.0, "TandT": 90.7},
+            "APGD": {"ERM": 0.0, "DA": 0.0, "PGDT": 48.4, "TRADES": 51.0, "MART": 46.4, "RS": 1.0, "IBP": 38.1, "PRL": 0.0, "TandT": 90.7},
+            "NIFGSM": {"ERM": 0.0, "DA": 0.0, "PGDT": 57.95, "TRADES": 56.7, "MART": 59.8, "RS": 7.2, "IBP": 38.1, "PRL": 1.0, "TandT": 92.8},
+            "SiniFGSM": {"ERM": 4.1, "DA": 1.0, "PGDT": 59.0, "TRADES": 56.7, "MART": 61.9, "RS": 23.7, "IBP": 38.1, "PRL": 12.4, "TandT": 93.7},
+            "VNIFGSM": {"ERM": 0.0, "DA": 0.0, "PGDT": 50.45, "TRADES": 53.0, "MART": 48.5, "RS": 5.1, "IBP": 38.1, "PRL": 0.0, "TandT": 92.9},
+            "APGDT": {"ERM": 0.0, "DA": 0.0, "PGDT": 40.9, "TRADES": 44.3, "MART": 38.1, "RS": 0.0, "IBP": 38.1, "PRL": 0.0, "TandT": 88.7},
+            "Square": {"ERM": 0.0, "DA": 1.0, "PGDT": 50.4, "TRADES": 54.0, "MART": 47.4, "RS": 3.1, "IBP": 38.1, "PRL": 2.1, "TandT": 88.08},
+            "Add Gaussian Noise": {"ERM": 25.8, "DA": 43.3, "PGDT": 79.1, "TRADES": 78.4, "MART": 80.4, "RS": 74.2, "IBP": 42.3, "PRL": 45.4, "TandT": 87.6},
+            "OnePixel": {"ERM": 79.4, "DA": 83.5, "PGDT": 78.05, "TRADES": 74.2, "MART": 82.5, "RS": 83.5, "IBP": 42.5, "PRL": 80.4, "TandT": 89.7},
+            "Pixle": {"ERM": 0.0, "DA": 0.0, "PGDT": 12.55, "TRADES": 11.3, "MART": 14.4, "RS": 1.0, "IBP": 10.3, "PRL": 0.0, "TandT": 17.5},
+            "PGDL2": {"ERM": 1.0, "DA": 0.0, "PGDT": 35.8, "TRADES": 36.1, "MART": 36.1, "RS": 5.2, "IBP": 36.1, "PRL": 0.0, "TandT": 92.9}
+        };
+
+        // Create chart - Horizontal layout
+        const margin = { top: 50, right: 30, bottom: 100, left: 120 },
+              width = 1100 - margin.left - margin.right,
+              height = 600 - margin.top - margin.bottom;
+
+        const svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const colorScale = d3.scaleLinear()
+            .range(["#e74c3c", "#f1c40f", "#27ae60"])
+            .domain([0, 50, 100]);
+
+        // Note: Defense methods on X-axis, Attack methods on Y-axis
+        const xScale = d3.scaleBand()
+            .range([0, width])
+            .padding(0.05);
+
+        const yScale = d3.scaleBand()
+            .range([0, height])
+            .padding(0.05);
+
+        // Process data
+        const defenseMethods = Object.keys(data["No Attack"]);
+        const attackMethods = Object.keys(data);
+
+        // Note: Defense methods on X-axis, Attack methods on Y-axis
+        xScale.domain(defenseMethods);
+        yScale.domain(attackMethods);
+
+        // Draw Y-axis (Attack Methods)
+        svg.append("g")
+            .call(d3.axisLeft(yScale))
+            .selectAll("text")
+            .style("font-size", "10px");
+
+        // Draw X-axis (Defense Methods) - Should now display completely
+        svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(xScale))
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .style("text-anchor", "end")
+            .style("font-size", "10px")
+            .attr("dx", "-0.8em")
+            .attr("dy", "0.15em");
+
+        // Draw heatmap cells
+        attackMethods.forEach(attack => {
+            defenseMethods.forEach(defense => {
+                const value = data[attack][defense];
+                
+                svg.append("rect")
+                    .attr("class", "cell")
+                    .attr("x", xScale(defense))
+                    .attr("y", yScale(attack))
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", yScale.bandwidth())
+                    .style("fill", colorScale(value))
+                    .style("stroke", "#fff")
+                    .style("stroke-width", 1)
+                    .on("mouseover", function(event) {
+                        d3.select(this)
+                            .style("stroke", "#2c3e50")
+                            .style("stroke-width", 2);
+                        
+                        const tooltip = d3.select("body").append("div")
+                            .style("position", "absolute")
+                            .style("background", "rgba(44, 62, 80, 0.95)")
+                            .style("color", "white")
+                            .style("padding", "10px")
+                            .style("border-radius", "5px")
+                            .style("font-size", "12px")
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 40) + "px")
+                            .html(`
+                                <div style="margin-bottom: 5px;"><strong>Attack Method:</strong> ${attack}</div>
+                                <div style="margin-bottom: 5px;"><strong>Defense Method:</strong> ${defense}</div>
+                                <div><strong>Accuracy:</strong> ${value}%</div>
+                            `);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                            .style("stroke", "#fff")
+                            .style("stroke-width", 1);
+                        d3.selectAll("div").filter(function() {
+                            return this.style.position === 'absolute';
+                        }).remove();
+                    });
+            });
+        });
+
+        // Add axis labels
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 20)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Attack Methods");
+
+        svg.append("text")
+            .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 20})`)
+            .style("text-anchor", "middle")
+            .text("Defense Methods");
+    </script>
+</body>
+</html>
