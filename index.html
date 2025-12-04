@@ -1,373 +1,1352 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>IDV Assignment 5 – Integrated Visualisations</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>IDV Assignment 5 – Integration of A1–A4</title>
+
+  <!-- D3 for A3 & A4 -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
   <style>
-    :root {
-      /* A2 用到的 CSS 变量 */
-      --cell-size: 200px;
-      --a2-bg: #ffffff;
-      --a2-border: #ffffff;
+    /* ===== Global layout & typography ===== */
+    * {
+      box-sizing: border-box;
     }
 
-    /* ===== 全局页面样式 ===== */
     body {
-      font-family: Arial, sans-serif;
-      background: #0f1424;
-      color: #fff;
-      margin: 20px;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+        "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #e5e7eb;
+      color: #111827;
     }
 
-    h1, h2 {
-      text-align: center;
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
     }
 
     h1 {
-      color: #6c5ce7;
-      margin-bottom: 5px;
+      margin: 0 0 8px;
+      font-size: 1.8rem;
     }
 
-    h2 {
-      margin-top: 40px;
-      margin-bottom: 10px;
-      color: #ffd86b;
+    .page-subtitle {
+      margin: 0 0 24px;
+      color: #4b5563;
+      font-size: 0.98rem;
     }
 
-    .overview {
-      max-width: 900px;
-      margin: 0 auto 30px auto;
-      background: #1d2a4a;
-      padding: 15px 20px;
-      border-radius: 8px;
+    section.section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .section-header {
+      margin-bottom: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .section-subtitle {
+      margin: 4px 0 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    .lead {
+      font-size: 0.95rem;
+      color: #374151;
       line-height: 1.6;
-      font-size: 14px;
     }
 
-    .assignment-section {
-      max-width: 1000px;
-      margin: 0 auto 40px auto;
+    .overview-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+      font-size: 0.92rem;
     }
 
-    .assignment-desc {
-      font-size: 14px;
-      color: #ccc;
-      margin-bottom: 10px;
-      text-align: left;
+    .overview-list li {
+      margin: 4px 0;
     }
 
-    /* ===== A1 专属样式 ===== */
-    #a1-section table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #1d2a4a;
-      border-radius: 8px;
-      overflow: hidden;
+    /* ===== Shared D3 tooltip (A3 & A4) ===== */
+    .tooltip {
+      position: absolute;
+      background: rgba(17, 24, 39, 0.96);
+      color: #f9fafb;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      line-height: 1.4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     }
 
-    #a1-section th,
-    #a1-section td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: center;
-      font-size: 13px;
+    svg {
+      font-family: inherit;
     }
 
-    #a1-section th {
-      background: #2e3b5a;
-    }
-
-    #a1-section tr:hover {
-      background: #2f3c60;
+    /* ===== A1: API data table ===== */
+    #a1-wrapper {
+      margin-top: 12px;
     }
 
     #a1-update {
       text-align: center;
-      margin: 15px 0;
-      color: #aaa;
-      font-size: 13px;
+      margin: 10px 0 14px;
+      color: #6b7280;
+      font-size: 0.9rem;
     }
 
-    /* ===== A2 专属样式（全部限制在 #a2-section 里面） ===== */
-    #a2-section {
-      background: #111827;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    #a2-section .a2-table-wrapper {
-      overflow-x: auto; /* 防止横向溢出 */
-      background: #111827;
-    }
-
-    #a2-section .a2-table {
+    #a1-table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--a2-bg);
-      table-layout: fixed; /* 保持列宽稳定 */
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: 0.9rem;
     }
 
-    #a2-section .a2-table th,
-    #a2-section .a2-table td {
-      border: 1px solid var(--a2-border);
+    #a1-table th,
+    #a1-table td {
+      border: 1px solid #1f2937;
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    #a1-table thead th {
+      background: #111827;
+      font-weight: 600;
+    }
+
+    #a1-table tbody tr:nth-child(odd) {
+      background: #020617;
+    }
+
+    #a1-table tbody tr:nth-child(even) {
+      background: #030712;
+    }
+
+    #a1-table tbody tr:hover {
+      background: #0b1120;
+    }
+
+    /* ===== A2: SVG transformations ===== */
+    #a2-wrapper {
+      margin-top: 12px;
+      overflow-x: auto; /* 防止整体页面出现水平滚动条 */
+    }
+
+    #a2-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      table-layout: fixed;
+    }
+
+    #a2-table th,
+    #a2-table td {
+      border: 1px solid #e5e7eb;
       text-align: center;
       padding: 0;
       background: #ffffff;
-      color: #111827;
     }
 
-    #a2-section .table-title-row th {
+    #a2-table .table-title-row th {
       background-color: #c27ba0;
-      font-size: 1.5em;
-      border: 2px solid var(--a2-border);
-      height: 60px;
+      font-size: 1.2em;
+      border: 2px solid #ffffff;
+      height: 56px;
+      color: #ffffff;
     }
 
-    #a2-section .cell {
-      height: var(--cell-size);
+    #a2-table .cell {
+      height: 180px;
     }
 
-    /* frame 填满单元格，居中图片 */
-    #a2-section .frame {
+    #a2-table .frame {
       width: 100%;
       height: 100%;
       display: flex;
-      align-items: center;    /* 垂直居中 */
-      justify-content: center;/* 水平居中 */
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
       background: #ffffff;
     }
 
-    #a2-section .frame img {
-      max-width: 50%;
-      max-height: 50%;
+    #a2-table .frame img {
+      max-width: 60%;
+      max-height: 60%;
       display: block;
       will-change: transform, filter;
       transform-origin: center center;
       image-rendering: auto;
     }
 
-    /* 变换效果 */
-    #a2-section .mirror img    { transform: scaleX(-1); }
-    #a2-section .rotate180 img { transform: rotate(180deg); }
-    #a2-section .squeezeY img  { transform: scaleY(0.5); }
-    #a2-section .grayscale img { filter: grayscale(100%); }
+    #a2-table .mirror img {
+      transform: scaleX(-1);
+    }
+
+    #a2-table .rotate180 img {
+      transform: rotate(180deg);
+    }
+
+    #a2-table .squeezeY img {
+      transform: scaleY(0.5);
+    }
+
+    #a2-table .grayscale img {
+      filter: grayscale(100%);
+    }
+
+    /* ===== A3: D3 charts ===== */
+    #a3-wrapper {
+      margin-top: 12px;
+    }
+
+    .chart-card {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 18px 18px 16px;
+      margin-bottom: 18px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .chart-title {
+      margin: 0 0 3px;
+      font-size: 1rem;
+    }
+
+    .chart-subtitle {
+      margin: 0 0 12px;
+      color: #6b7280;
+      font-size: 0.86rem;
+    }
+
+    .note {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed #e5e7eb;
+      font-size: 0.86rem;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    .note strong {
+      color: #111827;
+    }
+
+    .note ol {
+      padding-left: 20px;
+      margin: 6px 0;
+    }
+
+    .note li {
+      margin: 4px 0;
+    }
+
+    /* ===== A4: Heatmap ===== */
+    #a4-wrapper {
+      margin-top: 12px;
+    }
+
+    .a4-container-inner {
+      background: #ffffff;
+    }
+
+    .analysis-section {
+      text-align: left;
+      line-height: 1.6;
+      background: #f8f9fa;
+      padding: 16px 18px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      border-left: 4px solid #3498db;
+      font-size: 0.9rem;
+    }
+
+    .analysis-section h3 {
+      color: #1f2933;
+      border-bottom: 1px solid #d1e3f8;
+      padding-bottom: 6px;
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .analysis-section p {
+      margin: 10px 0;
+    }
+
+    .analysis-section ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    .analysis-section li {
+      margin: 4px 0;
+    }
+
+    .analysis-section strong {
+      color: #2563eb;
+    }
+
+    .legend {
+      margin-top: 14px;
+      text-align: center;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .color-bar {
+      display: inline-block;
+      width: 220px;
+      height: 18px;
+      background: linear-gradient(to right, #e74c3c, #f1c40f, #27ae60);
+      margin: 0 10px;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .axis text {
+      font-size: 10px;
+    }
+
+    .cell {
+      stroke: #fff;
+      stroke-width: 1;
+    }
+
+    .cell:hover {
+      stroke: #111827;
+      stroke-width: 2;
+    }
+
+    /* Make SVGs never force horizontal scrolling on small screens */
+    .chart-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 16px 10px 32px;
+      }
+    }
   </style>
 </head>
 <body>
+  <main>
+    <!-- ===== Overview section ===== -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <h1>IDV Assignment 5 – Integration of Assignments 1–4</h1>
+        <p class="page-subtitle">
+          This page brings together my previous work:
+          A1 (API data table), A2 (SVG transformations),
+          A3 (interactive D3 charts), and A4 (adversarial-attack heatmap),
+          into one coherent layout.
+        </p>
+      </div>
+      <p class="lead">
+        Integration notes:
+      </p>
+      <ul class="overview-list">
+        <li>
+          I reorganised the four assignments into one shared layout:
+          each appears as its own section with consistent spacing,
+          headings, and card-like containers.
+        </li>
+        <li>
+          I kept all original functionality, but removed duplicate
+          HTML templates and used a single shared <code>&lt;head&gt;</code>,
+          CSS, and one D3.js import.
+        </li>
+        <li>
+          The hardest part to integrate was <strong>Assignment 4</strong>:
+          it uses a wide heatmap and custom tooltips. I adapted it to use
+          a shared tooltip (also used by Assignment 3) and made the SVG
+          width responsive so it fits within the same page layout
+          without horizontal scrolling.
+        </li>
+      </ul>
+    </section>
 
-  <!-- 顶部 overview -->
-  <h1>IDV Assignment 5 – Integrated Page (A1–A4)</h1>
-  <div class="overview">
-    <p>
-      这个页面整合了我在 IDV 课程中的四次作业（Assignment 1–4），
-      统一放在一个网页中展示。每一部分保留了原有的交互和可视化效果。
-    </p>
-    <p>
-      在整合过程中，我需要处理不同作业之间的 HTML 结构、样式（CSS）
-      和脚本（JavaScript）冲突，例如重复的 ID、全局样式覆盖等。
-      我通过为每个作业划分独立的 section，并给元素添加更具体的选择器，
-      来保证它们可以在同一页面正常工作。
-    </p>
-    <p>
-      （后面可以再补：哪个作业最难整合、为什么，以及具体遇到的困难。）
-    </p>
-  </div>
+    <!-- ===== A1 ===== -->
+    <section class="section" id="assignment1">
+      <div class="section-header">
+        <h2 class="section-title">Assignment 1 – Singapore Air Quality Monitor</h2>
+        <p class="section-subtitle">
+          API-driven PSI readings table for different regions in Singapore.
+        </p>
+      </div>
 
-  <!-- ===== Assignment 1 区域 ===== -->
-  <section id="a1-section" class="assignment-section">
-    <h2>Assignment 1 – 新加坡空气质量实时监测</h2>
-    <div class="assignment-desc">
-      使用新加坡政府公开 API 获取 PSI 空气质量数据，
-      并将不同指标在各个区域的数值以表格形式实时展示，每分钟自动更新一次。
-    </div>
+      <p class="lead">
+        This section fetches real-time PSI data from the official
+        <code>data.gov.sg</code> API and displays key air-quality indices
+        by region. The table refreshes automatically every minute.
+      </p>
 
-    <div id="a1-update">正在获取数据...</div>
-    <table id="a1-data-table">
-      <thead>
-        <tr>
-          <th>指标</th>
-          <th>中央</th>
-          <th>东部</th>
-          <th>西部</th>
-          <th>南部</th>
-          <th>北部</th>
-          <th>全国</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+      <div id="a1-wrapper">
+        <div id="a1-update">正在获取数据...</div>
+        <table id="a1-table">
+          <thead>
+            <tr>
+              <th>指标</th>
+              <th>中央</th>
+              <th>东部</th>
+              <th>西部</th>
+              <th>南部</th>
+              <th>北部</th>
+              <th>全国</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-  <!-- ===== Assignment 2 区域 ===== -->
-  <section id="a2-section" class="assignment-section">
-    <h2>Assignment 2 – SVG Transformations Grid</h2>
-    <div class="assignment-desc">
-      通过一组 SVG 图像展示不同的几何与视觉变换：
-      原图、镜像、旋转 180°、纵向压缩、灰度等，
-      用表格方式对比同一图形在不同变换下的效果。
-    </div>
+    <!-- ===== A2 ===== -->
+    <section class="section" id="assignment2">
+      <div class="section-header">
+        <h2 class="section-title">Assignment 2 – SVG Transformations Table</h2>
+        <p class="section-subtitle">
+          Ten SVG icons with mirror, rotation, squeeze, and grayscale effects.
+        </p>
+      </div>
 
-    <div class="a2-table-wrapper">
-      <table class="a2-table">
-        <thead>
-          <tr class="table-title-row">
-            <th colspan="5">Submission for Assignment 2</th>
-          </tr>
-          <tr>
-            <th>ORIGINAL</th>
-            <th>MIRROR</th>
-            <th>ROTATE 180</th>
-            <th>SQUEEZE</th>
-            <th>GRAYSCALE</th>
-          </tr>
-        </thead>
+      <p class="lead">
+        This section uses a 5-column table to show different visual
+        transformations applied to ten SVG images. The layout is kept
+        consistent with the rest of the page, while preserving the
+        original transformation logic.
+      </p>
 
-        <tbody>
-          <tr>
-            <td class="cell"><div class="frame"><img src="one.svg" alt="original one.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="one.svg" alt="mirror one.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="one.svg" alt="rotate180 one.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="one.svg" alt="squeezeY one.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="one.svg" alt="grayscale one.svg"></div></td>
-          </tr>
+      <div id="a2-wrapper">
+        <table id="a2-table">
+          <thead>
+            <tr class="table-title-row">
+              <th colspan="5">Submission for Assignment 2</th>
+            </tr>
+            <tr>
+              <th>ORIGINAL</th>
+              <th>MIRROR</th>
+              <th>ROTATE 180</th>
+              <th>SQUEEZE</th>
+              <th>GRAYSCALE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- one.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="one.svg" alt="original one.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="one.svg" alt="mirror one.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="one.svg" alt="rotate180 one.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="one.svg" alt="squeezeY one.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="one.svg" alt="grayscale one.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="two.svg" alt="original two.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="two.svg" alt="mirror two.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="two.svg" alt="rotate180 two.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="two.svg" alt="squeezeY two.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="two.svg" alt="grayscale two.svg"></div></td>
-          </tr>
+            <!-- two.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="two.svg" alt="original two.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="two.svg" alt="mirror two.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="two.svg" alt="rotate180 two.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="two.svg" alt="squeezeY two.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="two.svg" alt="grayscale two.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="three.svg" alt="original three.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="three.svg" alt="mirror three.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="three.svg" alt="rotate180 three.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="three.svg" alt="squeezeY three.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="three.svg" alt="grayscale three.svg"></div></td>
-          </tr>
+            <!-- three.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="three.svg" alt="original three.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="three.svg" alt="mirror three.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="three.svg" alt="rotate180 three.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="three.svg" alt="squeezeY three.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="three.svg" alt="grayscale three.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="four.svg" alt="original four.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="four.svg" alt="mirror four.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="four.svg" alt="rotate180 four.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="four.svg" alt="squeezeY four.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="four.svg" alt="grayscale four.svg"></div></td>
-          </tr>
+            <!-- four.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="four.svg" alt="original four.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="four.svg" alt="mirror four.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="four.svg" alt="rotate180 four.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="four.svg" alt="squeezeY four.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="four.svg" alt="grayscale four.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="five.svg" alt="original five.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="five.svg" alt="mirror five.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="five.svg" alt="rotate180 five.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="five.svg" alt="squeezeY five.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="five.svg" alt="grayscale five.svg"></div></td>
-          </tr>
+            <!-- five.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="five.svg" alt="original five.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="five.svg" alt="mirror five.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="five.svg" alt="rotate180 five.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="five.svg" alt="squeezeY five.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="five.svg" alt="grayscale five.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="six.svg" alt="original six.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="six.svg" alt="mirror six.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="six.svg" alt="rotate180 six.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="six.svg" alt="squeezeY six.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="six.svg" alt="grayscale six.svg"></div></td>
-          </tr>
+            <!-- six.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="six.svg" alt="original six.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="six.svg" alt="mirror six.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="six.svg" alt="rotate180 six.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="six.svg" alt="squeezeY six.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="six.svg" alt="grayscale six.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="seven.svg" alt="original seven.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="seven.svg" alt="mirror seven.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="seven.svg" alt="rotate180 seven.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="seven.svg" alt="squeezeY seven.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="seven.svg" alt="grayscale seven.svg"></div></td>
-          </tr>
+            <!-- seven.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="seven.svg" alt="original seven.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="seven.svg" alt="mirror seven.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="seven.svg" alt="rotate180 seven.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="seven.svg" alt="squeezeY seven.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="seven.svg" alt="grayscale seven.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="eight.svg" alt="original eight.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="eight.svg" alt="mirror eight.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="eight.svg" alt="rotate180 eight.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="eight.svg" alt="squeezeY eight.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="eight.svg" alt="grayscale eight.svg"></div></td>
-          </tr>
+            <!-- eight.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="eight.svg" alt="original eight.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="eight.svg" alt="mirror eight.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="eight.svg" alt="rotate180 eight.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="eight.svg" alt="squeezeY eight.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="eight.svg" alt="grayscale eight.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="nine.svg" alt="original nine.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="nine.svg" alt="mirror nine.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="nine.svg" alt="rotate180 nine.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="nine.svg" alt="squeezeY nine.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="nine.svg" alt="grayscale nine.svg"></div></td>
-          </tr>
+            <!-- nine.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="nine.svg" alt="original nine.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="nine.svg" alt="mirror nine.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="nine.svg" alt="rotate180 nine.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="nine.svg" alt="squeezeY nine.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="nine.svg" alt="grayscale nine.svg" />
+                </div>
+              </td>
+            </tr>
 
-          <tr>
-            <td class="cell"><div class="frame"><img src="ten.svg" alt="original ten.svg"></div></td>
-            <td class="cell"><div class="frame mirror"><img src="ten.svg" alt="mirror ten.svg"></div></td>
-            <td class="cell"><div class="frame rotate180"><img src="ten.svg" alt="rotate180 ten.svg"></div></td>
-            <td class="cell"><div class="frame squeezeY"><img src="ten.svg" alt="squeezeY ten.svg"></div></td>
-            <td class="cell"><div class="frame grayscale"><img src="ten.svg" alt="grayscale ten.svg"></div></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+            <!-- ten.svg -->
+            <tr>
+              <td class="cell">
+                <div class="frame">
+                  <img src="ten.svg" alt="original ten.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame mirror">
+                  <img src="ten.svg" alt="mirror ten.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame rotate180">
+                  <img src="ten.svg" alt="rotate180 ten.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame squeezeY">
+                  <img src="ten.svg" alt="squeezeY ten.svg" />
+                </div>
+              </td>
+              <td class="cell">
+                <div class="frame grayscale">
+                  <img src="ten.svg" alt="grayscale ten.svg" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-  <!-- 之后这里再接 A3 / A4 的 section -->
+    <!-- ===== A3 ===== -->
+    <section class="section" id="assignment3">
+      <div class="section-header">
+        <h2 class="section-title">Assignment 3 – D3 Replications (Charts 7–11)</h2>
+        <p class="section-subtitle">
+          Five small D3 visualisations with transitions and interaction.
+        </p>
+      </div>
 
+      <p class="lead">
+        This section reproduces Charts 7–11 from the assignment handout
+        using D3.js: a Venn diagram, grouped bars, a sketch-style SVG
+        figure, an abstract map, and two overlapping Gaussian curves.
+        Each chart includes short process notes documenting how I used
+        a chatbot while building the visualisation.
+      </p>
+
+      <div id="a3-wrapper">
+        <!-- Chart 7 -->
+        <div class="chart-card chart-container">
+          <h3 class="chart-title">Chart 7 — Venn Diagram</h3>
+          <p class="chart-subtitle">Three-set Venn diagram with regions I–VII.</p>
+          <div id="chart7"></div>
+          <div class="note">
+            <strong>Process notes for Chart 7 (Venn diagram):</strong>
+            <ol>
+              <li>We decomposed the drawing into three circles with fixed centres and radius, then adjusted coordinates by eye until the overlaps looked correct.</li>
+              <li>Region labels I–VII are placed with hard-coded <code>x,y</code> values, tweaked through trial and error.</li>
+              <li>Hover interactions use D3 transitions to slightly enlarge each circle and increase fill opacity.</li>
+              <li>Set labels (“Delete”, “Replace”, “Rewrite”) and region labels fade in on load to make the diagram feel more alive.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Chart 8 -->
+        <div class="chart-card chart-container">
+          <h3 class="chart-title">Chart 8 — Cross Validation Accuracy Bars</h3>
+          <p class="chart-subtitle">
+            Grouped bars showing main accuracy plus a dashed baseline for each model.
+          </p>
+          <div id="chart8"></div>
+          <div class="note">
+            <strong>Process notes for Chart 8 (bar chart):</strong>
+            <ol>
+              <li>We encoded the three models (BERT, RoBERTa, BART) as a small array of objects with two values each.</li>
+              <li>A standard D3 bar-chart scaffold (scales + axes) was adapted to match the handout’s layout.</li>
+              <li>The dashed rectangles are implemented as outline bars with <code>stroke-dasharray</code>.</li>
+              <li>Hovering a bar slightly changes its size and fill, while a tooltip shows the exact percentage.</li>
+              <li>A simple load-in animation grows each bar from height 0 in sequence.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Chart 9 -->
+        <div class="chart-card chart-container">
+          <h3 class="chart-title">Chart 9 — Sketch to SVG Figure</h3>
+          <p class="chart-subtitle">Line-drawing style character sitting on a block.</p>
+          <div id="chart9"></div>
+          <div class="note">
+            <strong>Process notes for Chart 9 (sketch to SVG):</strong>
+            <ol>
+              <li>The freehand sketch was broken down into rectangles, lines and circles.</li>
+              <li>Coordinates were iteratively adjusted until the pose matched the original sketch.</li>
+              <li>The whole group fades in, and stroke width increases slightly on hover.</li>
+              <li>Even without numeric data, this chart practises decomposing visual ideas into SVG primitives.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Chart 10 -->
+        <div class="chart-card chart-container">
+          <h3 class="chart-title">Chart 10 — Map with Highlighted Region</h3>
+          <p class="chart-subtitle">Abstract map with four land masses and a red focus ellipse.</p>
+          <div id="chart10"></div>
+          <div class="note">
+            <strong>Process notes for Chart 10 (abstract map):</strong>
+            <ol>
+              <li>A simple grid is drawn with loops over SVG coordinates.</li>
+              <li>Four polygon shapes approximate the “land masses” from the handout.</li>
+              <li>A red ellipse indicates the focus region in the central cluster.</li>
+              <li>Hovering land areas brightens them; the map group also zooms and fades in on load.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Chart 11 -->
+        <div class="chart-card chart-container">
+          <h3 class="chart-title">Chart 11 — Probability Density Functions</h3>
+          <p class="chart-subtitle">
+            Two Gaussian curves with a shaded overlapping region and vertical reference lines.
+          </p>
+          <div id="chart11"></div>
+          <div class="note">
+            <strong>Process notes for Chart 11 (function plot):</strong>
+            <ol>
+              <li>A JavaScript <code>gaussian()</code> helper computes the density for each sampled <code>x</code> value.</li>
+              <li>Two sets of samples produce the orange and blue curves.</li>
+              <li>The overlapping area is filled using a third dataset storing <code>min(y0, y1)</code> at each <code>x</code>.</li>
+              <li>Each curve is animated using <code>stroke-dasharray</code> and <code>stroke-dashoffset</code> to create a drawing effect.</li>
+              <li>Vertical dashed lines and a small legend complete the textbook-style look.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== A4 ===== -->
+    <section class="section" id="assignment4">
+      <div class="section-header">
+        <h2 class="section-title">Assignment 4 – Adversarial Attack Heatmap</h2>
+        <p class="section-subtitle">
+          Heatmap of 26 adversarial attacks × 9 defense methods (classification accuracy).
+        </p>
+      </div>
+
+      <p class="lead">
+        This section visualises how robust different defense methods are
+        under a variety of adversarial attacks. Colour encodes the model
+        accuracy (red = low, green = high), and tooltips show exact values.
+      </p>
+
+      <div id="a4-wrapper" class="chart-container">
+        <div class="analysis-section">
+          <h3>📈 Visualization Overview</h3>
+          <p>
+            <strong>Data Background:</strong>
+            This heatmap visualises the robustness of 9 machine learning
+            defense methods against 26 different adversarial attacks.
+            Each cell colour represents the classification accuracy of a
+            model under a specific attack scenario.
+          </p>
+
+          <p><strong>Interactive Features:</strong></p>
+          <ul>
+            <li>🎯 <strong>Mouse Hover</strong> – View detailed data for any cell (attack, defense, accuracy).</li>
+            <li>🌈 <strong>Colour Interpretation</strong> – Red (0–30%) weak defence, Yellow (30–70%) moderate, Green (70–100%) strong.</li>
+            <li>📊 <strong>Pattern Recognition</strong> – Row and column patterns reveal particularly strong attacks or robust defences.</li>
+          </ul>
+
+          <p><strong>Key Insights:</strong></p>
+          <ul>
+            <li>🛡️ <strong>Best Defence</strong> – TandT maintains high accuracy against most attacks (many green cells).</li>
+            <li>⚔️ <strong>Strongest Attacks</strong> – MIFGSM and APGD severely reduce accuracy across many defences.</li>
+            <li>🎯 <strong>Targeted Effectiveness</strong> – Some attacks (e.g. Pixle) are highly effective against nearly all defence methods.</li>
+          </ul>
+        </div>
+
+        <div id="a4-chart"></div>
+
+        <div class="legend">
+          <span><strong>Low Accuracy (0%)</strong></span>
+          <div class="color-bar"></div>
+          <span><strong>High Accuracy (100%)</strong></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Scripts: A1–A4 ===== -->
   <script>
-    // ===== A1：新加坡空气质量实时监测 =====
-    function setupAssignment1() {
-      const labels = {
-        "o3_sub_index": "臭氧子指数 (O₃)",
-        "pm10_twenty_four_hourly": "PM₁₀ 24小时平均浓度",
-        "pm10_sub_index": "PM₁₀ 子指数",
-        "co_sub_index": "一氧化碳子指数 (CO)",
-        "pm25_twenty_four_hourly": "PM₂.₅ 24小时平均浓度",
-        "so2_sub_index": "二氧化硫子指数 (SO₂)",
-        "co_eight_hour_max": "一氧化碳8小时最大值",
-        "no2_one_hour_max": "二氧化氮1小时最大值 (NO₂)",
-        "so2_twenty_four_hourly": "二氧化硫24小时平均浓度",
-        "pm25_sub_index": "PM₂.₅ 子指数",
-        "psi_twenty_four_hourly": "空气污染指数 (PSI)",
-        "o3_eight_hour_max": "臭氧8小时最大值"
-      };
+    /* -------- Assignment 1: PSI API table -------- */
+    const a1Labels = {
+      o3_sub_index: "臭氧子指数 (O₃)",
+      pm10_twenty_four_hourly: "PM₁₀ 24小时平均浓度",
+      pm10_sub_index: "PM₁₀ 子指数",
+      co_sub_index: "一氧化碳子指数 (CO)",
+      pm25_twenty_four_hourly: "PM₂.₅ 24小时平均浓度",
+      so2_sub_index: "二氧化硫子指数 (SO₂)",
+      co_eight_hour_max: "一氧化碳8小时最大值",
+      no2_one_hour_max: "二氧化氮1小时最大值 (NO₂)",
+      so2_twenty_four_hourly: "二氧化硫24小时平均浓度",
+      pm25_sub_index: "PM₂.₅ 子指数",
+      psi_twenty_four_hourly: "空气污染指数 (PSI)",
+      o3_eight_hour_max: "臭氧8小时最大值"
+    };
 
-      const tbody = document.querySelector("#a1-data-table tbody");
+    async function loadA1Data() {
       const update = document.getElementById("a1-update");
+      const tbody = document.querySelector("#a1-table tbody");
 
-      async function loadData() {
-        try {
-          const res = await fetch("https://api.data.gov.sg/v1/environment/psi");
-          const json = await res.json();
-          const readings = json.items[0].readings;
-          const regions = Object.keys(readings.psi_twenty_four_hourly);
+      try {
+        const res = await fetch("https://api.data.gov.sg/v1/environment/psi");
+        const json = await res.json();
+        const readings = json.items[0].readings;
+        const regions = Object.keys(readings.psi_twenty_four_hourly);
 
-          const time = new Date(json.items[0].update_timestamp)
-            .toLocaleString("zh-SG", { timeZone: "Asia/Singapore" });
-          update.textContent = `最后更新：${time}`;
+        const time = new Date(json.items[0].update_timestamp).toLocaleString(
+          "zh-SG",
+          { timeZone: "Asia/Singapore" }
+        );
+        update.textContent = `最后更新：${time}`;
 
-          tbody.innerHTML = "";
-
-          for (const key in readings) {
-            const row = document.createElement("tr");
-            const label = labels[key] || key;
-            row.innerHTML =
-              `<td>${label}</td>` +
-              regions.map(r => `<td>${readings[key][r]}</td>`).join("");
-            tbody.appendChild(row);
-          }
-        } catch (err) {
-          console.error(err);
-          update.textContent = "数据加载失败，请稍后重试。";
+        tbody.innerHTML = "";
+        for (const key in readings) {
+          const row = document.createElement("tr");
+          const label = a1Labels[key] || key;
+          row.innerHTML =
+            `<td>${label}</td>` +
+            regions.map(r => `<td>${readings[key][r]}</td>`).join("");
+          tbody.appendChild(row);
         }
+      } catch (err) {
+        console.error(err);
+        update.textContent = "获取数据失败，请稍后重试。";
       }
-
-      // 初始化 & 每分钟刷新
-      loadData();
-      setInterval(loadData, 60000);
     }
 
-    // 页面加载完成后初始化
-    document.addEventListener("DOMContentLoaded", function () {
-      setupAssignment1();
-      // 以后在这里加：setupAssignment3(); setupAssignment4();
-    });
-  </script>
-</body>
-</html>
+    function initA1() {
+      loadA1Data();
+      setInterval(loadA1Data, 60_000);
+    }
+
+    /* -------- Assignment 3: Charts 7–11 -------- */
+
+    // Chart 7: Venn diagram
+    function drawChart7() {
+      const width = 420;
+      const height = 260;
+
+      const svg = d3
+        .select("#chart7")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      const g = svg
+        .append("g")
+        .attr("transform", "translate(0,10)");
+
+      const circles = [
+        { id: "A", cx: 150, cy: 120, r: 80, color: "#c4b5fd", label: "Delete" },
+        { id: "B", cx: 220, cy: 80, r: 80, color: "#bfdbfe", label: "Replace" },
+        { id: "C", cx: 260, cy: 140, r: 80, color: "#fde68a", label: "Rewrite" }
+      ];
+
+      const circleSelection = g
+        .selectAll("circle.venn")
+        .data(circles)
+        .enter()
+        .append("circle")
+        .attr("class", "venn")
+        .attr("cx", d => d.cx)
+        .attr("cy", d => d.cy)
+        .attr("r", 0)
+        .attr("fill", d => d.color)
+        .attr("fill-opacity", 0.2)
+        .attr("stroke", "#4b5563")
+        .attr("stroke-width", 1)
+        .on("mouseover", function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("r", d.r + 6)
+            .attr("fill-opacity", 0.8);
+        })
+        .on("mouseout", function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("r", d.r)
+            .attr("fill-opacity", 0.55);
+        });
+
+      circleSelection
+        .transition()
+        .duration(800)
+        .attr("r", d => d.r)
+        .attr("fill-opacity", 0.55);
+
+      const labels = [
+        { text: "I", x: 90, y: 140 },
+        { text: "II", x: 220, y: 30 },
+        { text: "III", x: 330, y: 145 },
+        { text: "IV", x: 165, y: 115 },
+        { text: "V", x: 235, y: 110 },
+        { text: "VI", x: 205, y: 150 },
+        { text: "VII", x: 220, y: 130 }
+      ];
+
+      g
+        .selectAll("text.region")
+        .data(labels)
+        .enter()
+        .append("text")
+        .attr("class", "region")
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .style("font-size", "13px")
+        .style("fill", "#111827")
+        .style("opacity", 0)
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1)
+        .text(d => d.text);
+
+      g
+        .append("text")
+        .attr("x", 70)
+        .attr("y", 30)
+        .style("font-size", "12px")
+        .style("opacity", 0)
+        .text("Delete")
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      g
+        .append("text")
+        .attr("x", 210)
+        .attr("y", 20)
+        .style("font-size", "12px")
+        .style("opacity", 0)
+        .text("Replace")
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      g
+        .append("text")
+        .attr("x", 330)
+        .attr("y", 40)
+        .style("font-size", "12px")
+        .style("opacity", 0)
+        .text("Rewrite")
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+    }
+
+    // Chart 8: Bars (needs tooltip)
+    function drawChart8(tooltip) {
+      const data = [
+        { model: "BERT", base: 74.4, dashed: 64.8 },
+        { model: "RoBERTa", base: 81.9, dashed: 65.5 },
+        { model: "BART", base: 73.1, dashed: 63.5 }
+      ];
+
+      const margin = { top: 40, right: 20, bottom: 40, left: 40 };
+      const baseWidth = 420;
+
+      const container = document.getElementById("chart8");
+      const available = container ? container.clientWidth : baseWidth;
+      const width = Math.min(baseWidth, available || baseWidth) - margin.left - margin.right;
+      const height = 240 - margin.top - margin.bottom;
+
+      const svg = d3
+        .select("#chart8")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const x = d3
+        .scaleBand()
+        .domain(data.map(d => d.model))
+        .range([0, width])
+        .padding(0.4);
+
+      const y = d3
+        .scaleLinear()
+        .domain([0, 100])
+        .nice()
+        .range([height, 0]);
+
+      svg
+        .append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x));
+
+      svg.append("g").call(d3.axisLeft(y).ticks(5));
+
+      svg
+        .append("line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", height)
+        .attr("y2", height)
+        .attr("stroke", "#111827")
+        .attr("stroke-width", 1);
+
+      const bars = svg
+        .selectAll(".bar-base")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar-base")
+        .attr("x", d => x(d.model))
+        .attr("width", x.bandwidth())
+        .attr("y", height)
+        .attr("height", 0)
+        .attr("fill", "#f9e4a4")
+        .attr("stroke", "#b38f3b")
+        .attr("stroke-width", 0.8)
+        .on("mouseover", function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("y", y(d.base) - 5)
+            .attr("height", height - y(d.base) + 5)
+            .attr("fill", "#fde68a");
+
+          tooltip
+            .style("opacity", 1)
+            .html(
+              `<strong>${d.model}</strong><br/>Accuracy: ${d.base.toFixed(1)}%`
+            )
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 28 + "px");
+        })
+        .on("mouseout", function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("y", y(d.base))
+            .attr("height", height - y(d.base))
+            .attr("fill", "#f9e4a4");
+
+          tooltip.style("opacity", 0);
+        });
+
+      bars
+        .transition()
+        .delay((d, i) => i * 200)
+        .duration(800)
+        .attr("y", d => y(d.base))
+        .attr("height", d => height - y(d.base));
+
+      svg
+        .selectAll(".bar-dashed")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar-dashed")
+        .attr("x", d => x(d.model) + x.bandwidth() * 0.1)
+        .attr("width", x.bandwidth() * 0.8)
+        .attr("y", d => y(d.dashed))
+        .attr("height", d => height - y(d.dashed))
+        .attr("fill", "none")
+        .attr("stroke", "#d4b866")
+        .attr("stroke-dasharray", "4,3")
+        .attr("stroke-width", 1.2)
+        .style("opacity", 0)
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      svg
+        .selectAll(".label-base")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "label-base")
+        .attr("x", d => x(d.model) + x.bandwidth() / 2)
+        .attr("y", d => y(d.base) - 6)
+        .attr("text-anchor", "middle")
+        .style("font-size", "11px")
+        .style("opacity", 0)
+        .text(d => d.base.toFixed(1))
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      svg
+        .selectAll(".label-dashed")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "label-dashed")
+        .attr("x", d => x(d.model) + x.bandwidth() / 2)
+        .attr("y", d => y(d.dashed) + 12)
+        .attr("text-anchor", "middle")
+        .style("font-size", "10px")
+        .style("fill", "#6b7280")
+        .style("opacity", 0)
+        .text(d => d.dashed.toFixed(1))
+        .transition()
+        .delay(700)
+        .duration(500)
+        .style("opacity", 1);
+
+      svg
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", -15)
+        .attr("text-anchor", "middle")
+        .style("font-size", "13px")
+        .style("font-weight", "bold")
+        .text("Cross Validation Accuracy (%)");
+    }
+
+    // Chart 9: Sketch to SVG
+    function drawChart9() {
+      const width = 360;
+      const height = 220;
+
+      const svg = d3
+        .select("#chart9")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background", "#f9fafb");
+
+      const g = svg
+        .append("g")
+        .attr("transform", "translate(40,15)")
+        .attr("stroke", "#4b5563")
+        .attr("fill", "none")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-linejoin", "round")
+        .style("opacity", 0);
+
+      // block
+      g
+        .append("rect")
+        .attr("x", 30)
+        .attr("y", 110)
+        .attr("width", 220)
+        .attr("height", 40)
+        .attr("fill", "#e5e7eb")
+        .attr("stroke-width", 1.2);
+
+      // body
+      g
+        .append("line")
+        .attr("x1", 140)
+        .attr("y1", 80)
+        .attr("x2", 140)
+        .attr("y2", 120)
+        .attr("stroke-width", 1.5);
+
+      // head
+      g
+        .append("rect")
+        .attr("x", 115)
+        .attr("y", 30)
+        .attr("width", 50)
+        .attr("height", 40)
+        .attr("fill", "#f3f4f6")
+        .attr("stroke-width", 1.5);
+
+      // face
+      g.append("line").attr("x1", 125).attr("y1", 48).attr("x2", 135).attr("y2", 48);
+      g.append("line").attr("x1", 146).attr("y1", 48).attr("x2", 156).attr("y2", 48);
+      g.append("line").attr("x1", 130).attr("y1", 58).attr("x2", 150).attr("y2", 58);
+
+      // legs
+      g.append("line").attr("x1", 140).attr("y1", 120).attr("x2", 120).attr("y2", 150);
+      g.append("line").attr("x1", 120).attr("y1", 150).attr("x2", 115).attr("y2", 165);
+      g.append("line").attr("x1", 140).attr("y1", 120).attr("x2", 155).attr("y2", 150);
+      g.append("line").attr("x1", 155).attr("y1", 150).attr("x2", 160).attr("y2", 165);
+
+      // arms & stick
+      g.append("line").attr("x1", 140).attr("y1", 90).attr("x2", 110).attr("y2", 110);
+      g.append("line").attr("x1", 140).attr("y1", 90).attr("x2", 170).attr("y2", 105);
+      g.append("line").attr("x1", 105).attr("y1", 108).attr("x2", 185).attr("y2", 130);
+
+      // hand circles
+      g.append("circle").attr("cx", 110).attr("cy", 110).attr("r", 3).attr("fill", "#4b5563");
+      g.append("circle").attr("cx", 170).attr("cy", 105).attr("r", 3).attr("fill", "#4b5563");
+
+      // fade-in
+      g
+        .transition()
+        .duration(800)
+        .style("opacity", 1);
+
+      // hover: stroke width change
+      g
+        .on("mouseover", function () {
+          d3.select(this)
+            .transition()
+            .duration(150)
+            .attr("stroke-width", 2);
+        })
+        .on("mouseout", function () {
+          d3.select(this)
+            .transition()
+            .duration(150)
+            .attr("stroke-width", 1.2);
+        });
+    }
+
+    // Chart 10: Abstract map
+    function drawChart10() {
+      const width = 360;
+      const height = 260;
+
+      const svg = d3
+        .select("#chart10")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background", "#f9fafb");
+
+      const margin = { top: 20
