@@ -4,7 +4,14 @@
   <meta charset="UTF-8">
   <title>IDV Assignment 5 – Integrated Visualisations</title>
   <style>
-    /* 全局页面样式（可以之后再调） */
+    :root {
+      /* A2 用到的 CSS 变量 */
+      --cell-size: 200px;
+      --a2-bg: #ffffff;
+      --a2-border: #ffffff;
+    }
+
+    /* ===== 全局页面样式 ===== */
     body {
       font-family: Arial, sans-serif;
       background: #0f1424;
@@ -49,7 +56,7 @@
       text-align: left;
     }
 
-    /* —— A1 专属样式 —— */
+    /* ===== A1 专属样式 ===== */
     #a1-section table {
       width: 100%;
       border-collapse: collapse;
@@ -80,11 +87,76 @@
       color: #aaa;
       font-size: 13px;
     }
+
+    /* ===== A2 专属样式（全部限制在 #a2-section 里面） ===== */
+    #a2-section {
+      background: #111827;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #a2-section .a2-table-wrapper {
+      overflow-x: auto; /* 防止横向溢出 */
+      background: #111827;
+    }
+
+    #a2-section .a2-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--a2-bg);
+      table-layout: fixed; /* 保持列宽稳定 */
+    }
+
+    #a2-section .a2-table th,
+    #a2-section .a2-table td {
+      border: 1px solid var(--a2-border);
+      text-align: center;
+      padding: 0;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    #a2-section .table-title-row th {
+      background-color: #c27ba0;
+      font-size: 1.5em;
+      border: 2px solid var(--a2-border);
+      height: 60px;
+    }
+
+    #a2-section .cell {
+      height: var(--cell-size);
+    }
+
+    /* frame 填满单元格，居中图片 */
+    #a2-section .frame {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;    /* 垂直居中 */
+      justify-content: center;/* 水平居中 */
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    #a2-section .frame img {
+      max-width: 50%;
+      max-height: 50%;
+      display: block;
+      will-change: transform, filter;
+      transform-origin: center center;
+      image-rendering: auto;
+    }
+
+    /* 变换效果 */
+    #a2-section .mirror img    { transform: scaleX(-1); }
+    #a2-section .rotate180 img { transform: rotate(180deg); }
+    #a2-section .squeezeY img  { transform: scaleY(0.5); }
+    #a2-section .grayscale img { filter: grayscale(100%); }
   </style>
 </head>
 <body>
 
-  <!-- 顶部 overview（之后可以再改内容） -->
+  <!-- 顶部 overview -->
   <h1>IDV Assignment 5 – Integrated Page (A1–A4)</h1>
   <div class="overview">
     <p>
@@ -127,23 +199,119 @@
     </table>
   </section>
 
-  <!-- ===== 这里预留给 A2 / A3 / A4，将来往下加 ===== -->
-  <!--
+  <!-- ===== Assignment 2 区域 ===== -->
   <section id="a2-section" class="assignment-section">
-    ...
+    <h2>Assignment 2 – SVG Transformations Grid</h2>
+    <div class="assignment-desc">
+      通过一组 SVG 图像展示不同的几何与视觉变换：
+      原图、镜像、旋转 180°、纵向压缩、灰度等，
+      用表格方式对比同一图形在不同变换下的效果。
+    </div>
+
+    <div class="a2-table-wrapper">
+      <table class="a2-table">
+        <thead>
+          <tr class="table-title-row">
+            <th colspan="5">Submission for Assignment 2</th>
+          </tr>
+          <tr>
+            <th>ORIGINAL</th>
+            <th>MIRROR</th>
+            <th>ROTATE 180</th>
+            <th>SQUEEZE</th>
+            <th>GRAYSCALE</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td class="cell"><div class="frame"><img src="one.svg" alt="original one.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="one.svg" alt="mirror one.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="one.svg" alt="rotate180 one.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="one.svg" alt="squeezeY one.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="one.svg" alt="grayscale one.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="two.svg" alt="original two.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="two.svg" alt="mirror two.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="two.svg" alt="rotate180 two.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="two.svg" alt="squeezeY two.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="two.svg" alt="grayscale two.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="three.svg" alt="original three.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="three.svg" alt="mirror three.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="three.svg" alt="rotate180 three.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="three.svg" alt="squeezeY three.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="three.svg" alt="grayscale three.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="four.svg" alt="original four.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="four.svg" alt="mirror four.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="four.svg" alt="rotate180 four.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="four.svg" alt="squeezeY four.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="four.svg" alt="grayscale four.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="five.svg" alt="original five.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="five.svg" alt="mirror five.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="five.svg" alt="rotate180 five.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="five.svg" alt="squeezeY five.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="five.svg" alt="grayscale five.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="six.svg" alt="original six.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="six.svg" alt="mirror six.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="six.svg" alt="rotate180 six.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="six.svg" alt="squeezeY six.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="six.svg" alt="grayscale six.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="seven.svg" alt="original seven.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="seven.svg" alt="mirror seven.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="seven.svg" alt="rotate180 seven.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="seven.svg" alt="squeezeY seven.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="seven.svg" alt="grayscale seven.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="eight.svg" alt="original eight.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="eight.svg" alt="mirror eight.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="eight.svg" alt="rotate180 eight.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="eight.svg" alt="squeezeY eight.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="eight.svg" alt="grayscale eight.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="nine.svg" alt="original nine.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="nine.svg" alt="mirror nine.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="nine.svg" alt="rotate180 nine.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="nine.svg" alt="squeezeY nine.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="nine.svg" alt="grayscale nine.svg"></div></td>
+          </tr>
+
+          <tr>
+            <td class="cell"><div class="frame"><img src="ten.svg" alt="original ten.svg"></div></td>
+            <td class="cell"><div class="frame mirror"><img src="ten.svg" alt="mirror ten.svg"></div></td>
+            <td class="cell"><div class="frame rotate180"><img src="ten.svg" alt="rotate180 ten.svg"></div></td>
+            <td class="cell"><div class="frame squeezeY"><img src="ten.svg" alt="squeezeY ten.svg"></div></td>
+            <td class="cell"><div class="frame grayscale"><img src="ten.svg" alt="grayscale ten.svg"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <section id="a3-section" class="assignment-section">
-    ...
-  </section>
-
-  <section id="a4-section" class="assignment-section">
-    ...
-  </section>
-  -->
+  <!-- 之后这里再接 A3 / A4 的 section -->
 
   <script>
-    // A1：新加坡空气质量实时监测
+    // ===== A1：新加坡空气质量实时监测 =====
     function setupAssignment1() {
       const labels = {
         "o3_sub_index": "臭氧子指数 (O₃)",
@@ -195,10 +363,10 @@
       setInterval(loadData, 60000);
     }
 
-    // 页面加载完成后初始化所有作业
+    // 页面加载完成后初始化
     document.addEventListener("DOMContentLoaded", function () {
       setupAssignment1();
-      // 后面加：setupAssignment2(); setupAssignment3(); setupAssignment4();
+      // 以后在这里加：setupAssignment3(); setupAssignment4();
     });
   </script>
 </body>
