@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment 5 - 整合作业展示</title>
+    <title>Assignment 5 - Integrated Assignment Showcase</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        /* ==================== 全局样式 ==================== */
+        /* ==================== Global Styles ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -24,7 +24,7 @@
             overflow-x: hidden;
         }
         
-        /* ==================== 顶部导航和概述 ==================== */
+        /* ==================== Top Navigation and Overview ==================== */
         .overview-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -61,7 +61,11 @@
             margin-bottom: 15px;
         }
         
-        /* ==================== 作业模块统一样式 ==================== */
+        .overview-content li {
+            margin-bottom: 5px;
+        }
+        
+        /* ==================== Assignment Module Uniform Styles ==================== */
         .assignment-module {
             background: white;
             border-radius: 12px;
@@ -109,7 +113,7 @@
             margin-top: 5px;
         }
         
-        /* ==================== A1 特有样式 ==================== */
+        /* ==================== A1 Specific Styles ==================== */
         #a1 .module-header {
             border-bottom-color: #3498db;
         }
@@ -124,17 +128,20 @@
             background: #1d2a4a;
             border-radius: 8px;
             overflow: hidden;
+            margin-top: 20px;
         }
         
         .api-table th, .api-table td {
             border: 1px solid #333;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
+            color: white;
         }
         
         .api-table th {
             background: #2e3b5a;
             color: white;
+            font-weight: bold;
         }
         
         .api-table tr:hover {
@@ -143,12 +150,13 @@
         
         .api-update {
             text-align: center;
-            margin: 15px 0;
+            margin: 20px 0 15px 0;
             color: #666;
             font-style: italic;
+            font-size: 1.1em;
         }
         
-        /* ==================== A2 特有样式 ==================== */
+        /* ==================== A2 Specific Styles ==================== */
         #a2 .module-header {
             border-bottom-color: #e74c3c;
         }
@@ -220,7 +228,7 @@
             filter: grayscale(100%);
         }
         
-        /* ==================== A3 特有样式 ==================== */
+        /* ==================== A3 Specific Styles ==================== */
         #a3 .module-header {
             border-bottom-color: #2ecc71;
         }
@@ -276,7 +284,7 @@
             line-height: 1.4;
         }
         
-        /* ==================== A4 特有样式 ==================== */
+        /* ==================== A4 Specific Styles ==================== */
         #a4 .module-header {
             border-bottom-color: #f39c12;
         }
@@ -311,7 +319,7 @@
             border: 1px solid #ddd;
         }
         
-        /* ==================== 响应式设计 ==================== */
+        /* ==================== Responsive Design ==================== */
         @media (max-width: 1200px) {
             .svg-cell {
                 height: 100px;
@@ -352,9 +360,25 @@
             .svg-cell {
                 height: 80px;
             }
+            
+            .api-table {
+                font-size: 0.9em;
+            }
+            
+            .api-table th, .api-table td {
+                padding: 8px;
+            }
         }
         
-        /* ==================== 打印样式 ==================== */
+        @media (max-width: 480px) {
+            .api-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        /* ==================== Print Styles ==================== */
         @media print {
             .assignment-module {
                 break-inside: avoid;
@@ -372,80 +396,82 @@
     </style>
 </head>
 <body>
-    <!-- 顶部概述部分 -->
+    <!-- Top Overview Section -->
     <section class="overview-section" id="overview">
-        <h1>Assignment 5 - 作业整合展示</h1>
+        <h1>Assignment 5 - Integrated Assignment Showcase</h1>
         <div class="overview-content">
-            <h3>页面内容概述</h3>
-            <p>本页面整合了Assignment 1-4的所有内容，展示了完整的作业成果。通过统一的布局和设计，将四个独立的作业模块整合成一个连贯的网页。</p>
+            <h3>Page Content Overview</h3>
+            <p>This page integrates all content from Assignment 1-4, showcasing the complete work. Through a unified layout and design, four independent assignment modules are integrated into one coherent webpage.</p>
             
-            <h3>整合过程</h3>
-            <p>整合过程中遵循以下原则：</p>
+            <h3>Integration Process</h3>
+            <p>The integration followed these principles:</p>
             <ul>
-                <li>保持每个作业原有功能的完整性</li>
-                <li>创建统一的CSS样式系统，确保视觉一致性</li>
-                <li>使用模块化布局，使每个作业清晰可辨</li>
-                <li>优化响应式设计，确保在不同设备上正常显示</li>
+                <li>Maintain the original functionality of each assignment</li>
+                <li>Create a unified CSS style system to ensure visual consistency</li>
+                <li>Use modular layout to make each assignment clearly distinguishable</li>
+                <li>Optimize responsive design to ensure proper display on different devices</li>
             </ul>
             
-            <h3>遇到的挑战</h3>
-            <p>主要挑战包括：</p>
+            <h3>Challenges Encountered</h3>
+            <p>Main challenges included:</p>
             <ul>
-                <li><strong>CSS冲突：</strong>不同作业的样式规则相互影响，需要重构样式系统</li>
-                <li><strong>布局差异：</strong>A1使用表格布局，A2也是表格但结构不同，A3和A4使用D3.js可视化，布局方式各异</li>
-                <li><strong>脚本冲突：</strong>各作业的JavaScript代码可能使用相同的变量名或函数名</li>
-                <li><strong>性能优化：</strong>整合多个D3可视化可能影响页面加载性能</li>
+                <li><strong>CSS conflicts:</strong> Different assignment style rules affected each other, requiring style system reconstruction</li>
+                <li><strong>Layout differences:</strong> A1 uses table layout, A2 also uses tables but with different structure, A3 and A4 use D3.js visualizations with different layout approaches</li>
+                <li><strong>Script conflicts:</strong> JavaScript code from each assignment might use the same variable or function names</li>
+                <li><strong>Performance optimization:</strong> Integrating multiple D3 visualizations could affect page loading performance</li>
             </ul>
             
-            <h3>最困难的整合部分</h3>
-            <p><strong>A3的整合最为困难。</strong>原因如下：</p>
+            <h3>Most Difficult Integration Part</h3>
+            <p><strong>Integration of A3 was the most difficult.</strong> Reasons:</p>
             <ul>
-                <li>A3包含5个独立的D3图表，每个都有复杂的交互和动画</li>
-                <li>图表代码结构紧密耦合，难以分离</li>
-                <li>需要确保所有D3选择器在整合后仍然正确工作</li>
-                <li>处理多个图表的tooltip系统需要特别小心，避免冲突</li>
+                <li>A3 contains 5 independent D3 charts, each with complex interactions and animations</li>
+                <li>Chart code is tightly coupled, making separation difficult</li>
+                <li>Ensuring all D3 selectors work correctly after integration</li>
+                <li>Handling multiple chart tooltip systems requires special care to avoid conflicts</li>
             </ul>
             
-            <p><strong>解决方案：</strong>为每个图表创建独立的容器，封装各自的脚本，使用立即执行函数避免全局变量污染，并统一tooltip系统。</p>
+            <p><strong>Solution:</strong> Create independent containers for each chart, encapsulate respective scripts, use immediately invoked function expressions to avoid global variable pollution, and unify the tooltip system.</p>
         </div>
     </section>
 
-    <!-- A1: 空气质量数据表格 -->
+    <!-- A1: Air Quality Data Table -->
     <section class="assignment-module" id="a1">
         <div class="module-header">
             <div class="module-number">1</div>
             <div>
-                <h2 class="module-title">Assignment 1: 新加坡空气质量实时监测</h2>
-                <p class="module-description">使用API获取实时空气质量数据，并以表格形式展示</p>
+                <h2 class="module-title">Assignment 1: Singapore Air Quality Real-time Monitoring</h2>
+                <p class="module-description">Using API to fetch real-time air quality data and display in table format</p>
             </div>
         </div>
         
         <div id="a1-content">
-            <div id="update" class="api-update">正在获取数据...</div>
+            <div id="update" class="api-update">Loading data...</div>
             <table class="api-table" id="data-table">
                 <thead>
                     <tr>
-                        <th>指标</th>
-                        <th>中央</th>
-                        <th>东部</th>
-                        <th>西部</th>
-                        <th>南部</th>
-                        <th>北部</th>
-                        <th>全国</th>
+                        <th>Metric</th>
+                        <th>Central</th>
+                        <th>East</th>
+                        <th>West</th>
+                        <th>South</th>
+                        <th>North</th>
+                        <th>National</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                    <!-- Data will be loaded here -->
+                </tbody>
             </table>
         </div>
     </section>
 
-    <!-- A2: SVG变换表格 -->
+    <!-- A2: SVG Transformations Table -->
     <section class="assignment-module" id="a2">
         <div class="module-header">
             <div class="module-number">2</div>
             <div>
-                <h2 class="module-title">Assignment 2: SVG图像变换展示</h2>
-                <p class="module-description">展示SVG图像的各种变换效果：镜像、旋转、压缩和灰度化</p>
+                <h2 class="module-title">Assignment 2: SVG Image Transformations</h2>
+                <p class="module-description">Display various SVG image transformation effects: mirror, rotation, compression, and grayscale</p>
             </div>
         </div>
         
@@ -464,19 +490,19 @@
                     </tr>
                 </thead>
                 <tbody id="svg-table-body">
-                    <!-- SVG表格行将通过JavaScript动态生成 -->
+                    <!-- SVG table rows will be dynamically generated via JavaScript -->
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- A3: D3可视化图表 -->
+    <!-- A3: D3 Visualization Charts -->
     <section class="assignment-module" id="a3">
         <div class="module-header">
             <div class="module-number">3</div>
             <div>
-                <h2 class="module-title">Assignment 3: D3交互式可视化</h2>
-                <p class="module-description">使用D3.js创建的五个交互式图表，包含过渡动画和悬停效果</p>
+                <h2 class="module-title">Assignment 3: D3 Interactive Visualizations</h2>
+                <p class="module-description">Five interactive charts created using D3.js, including transition animations and hover effects</p>
             </div>
         </div>
         
@@ -518,33 +544,33 @@
         </div>
     </section>
 
-    <!-- A4: 热力图可视化 -->
+    <!-- A4: Heatmap Visualization -->
     <section class="assignment-module" id="a4">
         <div class="module-header">
             <div class="module-number">4</div>
             <div>
-                <h2 class="module-title">Assignment 4: 机器学习模型鲁棒性热力图</h2>
-                <p class="module-description">展示不同防御方法对对抗攻击的鲁棒性分析</p>
+                <h2 class="module-title">Assignment 4: Machine Learning Model Robustness Heatmap</h2>
+                <p class="module-description">Analysis of robustness of different defense methods against adversarial attacks</p>
             </div>
         </div>
         
         <div id="a4-content">
             <div class="analysis-section">
-                <h3>📈 可视化概述</h3>
-                <p><strong>数据背景：</strong>此热力图可视化9种机器学习防御方法对26种不同对抗攻击的鲁棒性。每个单元格颜色表示在特定攻击场景下模型的分类准确率。</p>
+                <h3>📈 Visualization Overview</h3>
+                <p><strong>Data Background:</strong> This heatmap visualizes the robustness of 9 machine learning defense methods against 26 different adversarial attacks. Each cell color represents the classification accuracy of a model under a specific attack scenario.</p>
                 
-                <p><strong>交互功能：</strong></p>
+                <p><strong>Interactive Features:</strong></p>
                 <ul>
-                    <li>🎯 <strong>鼠标悬停</strong> - 查看任何单元格的详细数据（攻击方法、防御方法、准确率）</li>
-                    <li>🌈 <strong>颜色解读</strong> - 红色（0-30%）表示防御较弱，黄色（30-70%）表示中等性能，绿色（70-100%）表示防御较强</li>
-                    <li>📊 <strong>模式识别</strong> - 观察行/列的颜色趋势，分析特定攻击或防御的整体效果</li>
+                    <li>🎯 <strong>Mouse Hover</strong> - View detailed data for any cell (attack method, defense method, accuracy rate)</li>
+                    <li>🌈 <strong>Color Interpretation</strong> - Red (0-30%) indicates weak defense, Yellow (30-70%) moderate performance, Green (70-100%) strong defense</li>
+                    <li>📊 <strong>Pattern Recognition</strong> - Observe color trends across rows/columns to analyze overall effectiveness of specific attacks or defenses</li>
                 </ul>
                 
-                <p><strong>主要发现：</strong></p>
+                <p><strong>Key Insights:</strong></p>
                 <ul>
-                    <li>🛡️ <strong>最佳防御</strong> - TandT方法在大多数攻击下保持高准确率（绿色单元格最多）</li>
-                    <li>⚔️ <strong>最强攻击</strong> - MIFGSM、APGD方法能有效降低大多数防御的准确率</li>
-                    <li>🎯 <strong>针对性效果</strong> - 某些攻击对特定防御特别有效（例如Pixle攻击影响所有防御）</li>
+                    <li>🛡️ <strong>Best Defense</strong> - TandT method maintains high accuracy against most attacks (most green cells)</li>
+                    <li>⚔️ <strong>Strongest Attacks</strong> - MIFGSM, APGD methods effectively reduce accuracy of most defenses</li>
+                    <li>🎯 <strong>Targeted Effectiveness</strong> - Certain attacks work particularly well against specific defenses (e.g., Pixle attack affects all defenses)</li>
                 </ul>
             </div>
             
@@ -553,36 +579,36 @@
             </div>
             
             <div class="heatmap-legend">
-                <span><strong>低准确率 (0%)</strong></span>
+                <span><strong>Low Accuracy (0%)</strong></span>
                 <div class="color-bar"></div>
-                <span><strong>高准确率 (100%)</strong></span>
+                <span><strong>High Accuracy (100%)</strong></span>
             </div>
         </div>
     </section>
 
-    <!-- 页脚 -->
+    <!-- Footer -->
     <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #666; border-top: 1px solid #eee;">
-        <p>Assignment 5 - 整合作业展示 | 所有作业功能保持完整运行</p>
-        <p>© 2023 数据可视化课程项目</p>
+        <p>Assignment 5 - Integrated Assignment Showcase | All assignment functionalities remain fully operational</p>
+        <p>© 2023 Data Visualization Course Project</p>
     </footer>
 
-    <!-- ==================== JavaScript 代码 ==================== -->
+    <!-- ==================== JavaScript Code ==================== -->
     <script>
-        // ==================== A1: 空气质量API ====================
+        // ==================== A1: Air Quality API ====================
         (function() {
             const labels = {
-                "o3_sub_index": "臭氧子指数 (O₃)",
-                "pm10_twenty_four_hourly": "PM₁₀ 24小时平均浓度",
-                "pm10_sub_index": "PM₁₀ 子指数",
-                "co_sub_index": "一氧化碳子指数 (CO)",
-                "pm25_twenty_four_hourly": "PM₂.₅ 24小时平均浓度",
-                "so2_sub_index": "二氧化硫子指数 (SO₂)",
-                "co_eight_hour_max": "一氧化碳8小时最大值",
-                "no2_one_hour_max": "二氧化氮1小时最大值 (NO₂)",
-                "so2_twenty_four_hourly": "二氧化硫24小时平均浓度",
-                "pm25_sub_index": "PM₂.₅ 子指数",
-                "psi_twenty_four_hourly": "空气污染指数 (PSI)",
-                "o3_eight_hour_max": "臭氧8小时最大值"
+                "o3_sub_index": "Ozone Sub Index (O₃)",
+                "pm10_twenty_four_hourly": "PM₁₀ 24-Hour Average",
+                "pm10_sub_index": "PM₁₀ Sub Index",
+                "co_sub_index": "Carbon Monoxide Sub Index (CO)",
+                "pm25_twenty_four_hourly": "PM₂.₅ 24-Hour Average",
+                "so2_sub_index": "Sulfur Dioxide Sub Index (SO₂)",
+                "co_eight_hour_max": "CO 8-Hour Max",
+                "no2_one_hour_max": "Nitrogen Dioxide 1-Hour Max (NO₂)",
+                "so2_twenty_four_hourly": "SO₂ 24-Hour Average",
+                "pm25_sub_index": "PM₂.₅ Sub Index",
+                "psi_twenty_four_hourly": "Pollutant Standards Index (PSI)",
+                "o3_eight_hour_max": "Ozone 8-Hour Max"
             };
 
             async function loadData() {
@@ -593,31 +619,60 @@
                     const regions = Object.keys(readings.psi_twenty_four_hourly);
                     const tbody = document.querySelector("#data-table tbody");
                     const update = document.getElementById("update");
-                    const time = new Date(json.items[0].update_timestamp).toLocaleString("zh-SG", { 
-                        timeZone: "Asia/Singapore" 
+                    
+                    // Format timestamp
+                    const time = new Date(json.items[0].update_timestamp).toLocaleString("en-SG", { 
+                        timeZone: "Asia/Singapore",
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
                     });
-                    update.textContent = `最后更新：${time}`;
+                    update.textContent = `Last Updated: ${time}`;
                     tbody.innerHTML = "";
                     
+                    // Create table rows
                     for (const key in readings) {
                         const row = document.createElement("tr");
                         const label = labels[key] || key;
-                        row.innerHTML = `<td>${label}</td>` + 
-                            regions.map(r => `<td>${readings[key][r]}</td>`).join("");
+                        
+                        // Create label cell
+                        const labelCell = document.createElement("td");
+                        labelCell.textContent = label;
+                        labelCell.style.fontWeight = "bold";
+                        row.appendChild(labelCell);
+                        
+                        // Create data cells for each region
+                        regions.forEach(region => {
+                            const dataCell = document.createElement("td");
+                            const value = readings[key][region];
+                            dataCell.textContent = typeof value === 'number' ? value.toFixed(1) : value;
+                            row.appendChild(dataCell);
+                        });
+                        
                         tbody.appendChild(row);
                     }
                 } catch (error) {
-                    console.error("加载数据失败:", error);
-                    document.getElementById("update").textContent = "数据加载失败，请稍后重试";
+                    console.error("Failed to load data:", error);
+                    document.getElementById("update").textContent = "Failed to load data. Please try again later.";
+                    document.querySelector("#data-table tbody").innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px; color: #ff6b6b;">
+                                Unable to load data from API. Please check your internet connection.
+                            </td>
+                        </tr>
+                    `;
                 }
             }
 
-            // 初始化 & 每分钟刷新
+            // Initial load and refresh every minute
             loadData();
             setInterval(loadData, 60000);
         })();
 
-        // ==================== A2: SVG变换表格 ====================
+        // ==================== A2: SVG Transformations Table ====================
         (function() {
             const svgFiles = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
             const tableBody = document.getElementById('svg-table-body');
@@ -655,9 +710,9 @@
             });
         })();
 
-        // ==================== A3: D3可视化 ====================
+        // ==================== A3: D3 Visualizations ====================
         (function() {
-            // 共享tooltip（用于柱状图）
+            // Shared tooltip (for bar chart)
             const tooltip = d3.select("body")
                 .append("div")
                 .attr("class", "tooltip")
@@ -706,7 +761,7 @@
                             .attr("fill-opacity", 0.55);
                     });
 
-                // 加载时圆圈动画
+                // Grow circles on load
                 circleSelection
                     .transition()
                     .duration(800)
@@ -843,7 +898,7 @@
                         tooltip.style("opacity", 0);
                     });
 
-                // 加载动画
+                // Load animation
                 bars.transition()
                     .delay((d, i) => i * 200)
                     .duration(800)
@@ -929,7 +984,7 @@
                     .attr("stroke-linejoin", "round")
                     .style("opacity", 0);
 
-                // 方块
+                // Block
                 g.append("rect")
                     .attr("x", 30)
                     .attr("y", 110)
@@ -938,10 +993,10 @@
                     .attr("fill", "#e5e7eb")
                     .attr("stroke-width", 1.2);
 
-                // 身体
+                // Body
                 g.append("line").attr("x1", 140).attr("y1", 80).attr("x2", 140).attr("y2", 120).attr("stroke-width", 1.5);
                 
-                // 头部
+                // Head
                 g.append("rect")
                     .attr("x", 115)
                     .attr("y", 30)
@@ -950,32 +1005,32 @@
                     .attr("fill", "#f3f4f6")
                     .attr("stroke-width", 1.5);
 
-                // 脸部
+                // Face
                 g.append("line").attr("x1", 125).attr("y1", 48).attr("x2", 135).attr("y2", 48);
                 g.append("line").attr("x1", 146).attr("y1", 48).attr("x2", 156).attr("y2", 48);
                 g.append("line").attr("x1", 130).attr("y1", 58).attr("x2", 150).attr("y2", 58);
 
-                // 腿
+                // Legs
                 g.append("line").attr("x1", 140).attr("y1", 120).attr("x2", 120).attr("y2", 150);
                 g.append("line").attr("x1", 120).attr("y1", 150).attr("x2", 115).attr("y2", 165);
                 g.append("line").attr("x1", 140).attr("y1", 120).attr("x2", 155).attr("y2", 150);
                 g.append("line").attr("x1", 155).attr("y1", 150).attr("x2", 160).attr("y2", 165);
 
-                // 手臂和棍子
+                // Arms & stick
                 g.append("line").attr("x1", 140).attr("y1", 90).attr("x2", 110).attr("y2", 110);
                 g.append("line").attr("x1", 140).attr("y1", 90).attr("x2", 170).attr("y2", 105);
                 g.append("line").attr("x1", 105).attr("y1", 108).attr("x2", 185).attr("y2", 130);
 
-                // 手部圆圈
+                // Hand circles
                 g.append("circle").attr("cx", 110).attr("cy", 110).attr("r", 3).attr("fill", "#4b5563");
                 g.append("circle").attr("cx", 170).attr("cy", 105).attr("r", 3).attr("fill", "#4b5563");
 
-                // 淡入动画
+                // Fade-in animation
                 g.transition()
                     .duration(800)
                     .style("opacity", 1);
 
-                // 悬停效果：线条宽度变化
+                // Hover: stroke width change
                 g.on("mouseover", function() {
                     d3.select(this).transition().duration(150).attr("stroke-width", 2);
                 })
@@ -1002,7 +1057,7 @@
                     .attr("transform", `translate(${margin.left},${margin.top}) scale(0.8)`)
                     .style("opacity", 0.2);
 
-                // 网格
+                // Grid
                 const step = 24;
                 for (let x = 0; x <= innerWidth; x += step) {
                     g.append("line")
@@ -1023,7 +1078,7 @@
                         .attr("stroke-width", 0.6);
                 }
 
-                // 陆地多边形
+                // Land polygons
                 const land = [
                     [[40, 40],[110, 35],[140, 60],[120, 110],[60, 100]],
                     [[170, 50],[240, 45],[260, 80],[230, 110],[185, 95]],
@@ -1051,7 +1106,7 @@
                             .attr("fill", "#f4d7a4");
                     });
 
-                // 焦点椭圆
+                // Focus ellipse
                 g.append("ellipse")
                     .attr("cx", innerWidth * 0.55)
                     .attr("cy", innerHeight * 0.45)
@@ -1061,7 +1116,7 @@
                     .attr("stroke", "#dc2626")
                     .attr("stroke-width", 2);
 
-                // 缩放 + 淡入动画
+                // Zoom + fade-in animation
                 g.transition()
                     .duration(900)
                     .attr("transform", `translate(${margin.left},${margin.top}) scale(1)`)
@@ -1118,7 +1173,7 @@
                     .style("font-size", "12px")
                     .text("Probability Density");
 
-                // 高斯函数
+                // Gaussian function
                 function gaussian(xVal, mu, sigma) {
                     const coeff = 1 / (Math.sqrt(2 * Math.PI) * sigma);
                     const expo = -Math.pow(xVal - mu, 2) / (2 * sigma * sigma);
@@ -1133,7 +1188,7 @@
                     .x(d => x(d.x))
                     .y(d => y(d.y));
 
-                // 重叠区域
+                // Overlap area
                 const overlap = xs.map(d => {
                     const y0 = gaussian(d, 0.2, 0.9);
                     const y1 = gaussian(d, 1.8, 0.8);
@@ -1156,7 +1211,7 @@
                     .duration(700)
                     .attr("opacity", 0.5);
 
-                // 第一条曲线
+                // First curve
                 const path0 = svg.append("path")
                     .datum(data0)
                     .attr("fill", "none")
@@ -1179,7 +1234,7 @@
                     .duration(900)
                     .attr("stroke-dashoffset", 0);
 
-                // 第二条曲线
+                // Second curve
                 const path1 = svg.append("path")
                     .datum(data1)
                     .attr("fill", "none")
@@ -1202,7 +1257,7 @@
                     .duration(900)
                     .attr("stroke-dashoffset", 0);
 
-                // 重叠区域悬停效果
+                // Overlap area hover effect
                 overlapPath
                     .on("mouseover", function() {
                         d3.select(this).transition().duration(150).attr("opacity", 0.8);
@@ -1211,7 +1266,7 @@
                         d3.select(this).transition().duration(150).attr("opacity", 0.5);
                     });
 
-                // 垂直参考线
+                // Vertical reference lines
                 const vlines = [0, 1, 2];
                 svg.selectAll(".vline")
                     .data(vlines)
@@ -1226,7 +1281,7 @@
                     .attr("stroke-dasharray", "4,3")
                     .attr("stroke-width", 1);
 
-                // 图例
+                // Legend
                 const legend = svg.append("g")
                     .attr("transform", `translate(${width - 160}, 10)`);
 
@@ -1253,7 +1308,7 @@
                     .text("p(x, y = 1) * v(x)");
             }
 
-            // 绘制所有图表
+            // Draw all charts
             drawChart7();
             drawChart8();
             drawChart9();
@@ -1261,9 +1316,9 @@
             drawChart11();
         })();
 
-        // ==================== A4: 热力图 ====================
+        // ==================== A4: Heatmap ====================
         (function() {
-            // 数据
+            // Data
             const data = {
                 "No Attack": {"ERM": 94.85, "DA": 94.21, "PGDT": 84.38, "TRADES": 80.42, "MART": 81.54, "RS": 89.45, "IBP": 48.4, "PRL": 93.82, "TandT": 94.23},
                 "TIFGSM": {"ERM": 35.1, "DA": 33.0, "PGDT": 65.7, "TRADES": 62.9, "MART": 69.1, "RS": 45.4, "IBP": 40.2, "PRL": 34.0, "TandT": 92.8},
@@ -1293,7 +1348,7 @@
                 "PGDL2": {"ERM": 1.0, "DA": 0.0, "PGDT": 35.8, "TRADES": 36.1, "MART": 36.1, "RS": 5.2, "IBP": 36.1, "PRL": 0.0, "TandT": 92.9}
             };
 
-            // 创建图表 - 水平布局
+            // Create chart - Horizontal layout
             const margin = { top: 50, right: 30, bottom: 100, left: 120 };
             const width = 1100 - margin.left - margin.right;
             const height = 600 - margin.top - margin.bottom;
@@ -1309,7 +1364,7 @@
                 .range(["#e74c3c", "#f1c40f", "#27ae60"])
                 .domain([0, 50, 100]);
 
-            // 防御方法在X轴，攻击方法在Y轴
+            // Defense methods on X-axis, Attack methods on Y-axis
             const xScale = d3.scaleBand()
                 .range([0, width])
                 .padding(0.05);
@@ -1318,20 +1373,20 @@
                 .range([0, height])
                 .padding(0.05);
 
-            // 处理数据
+            // Process data
             const defenseMethods = Object.keys(data["No Attack"]);
             const attackMethods = Object.keys(data);
 
             xScale.domain(defenseMethods);
             yScale.domain(attackMethods);
 
-            // 绘制Y轴（攻击方法）
+            // Draw Y-axis (Attack Methods)
             svg.append("g")
                 .call(d3.axisLeft(yScale))
                 .selectAll("text")
                 .style("font-size", "10px");
 
-            // 绘制X轴（防御方法）
+            // Draw X-axis (Defense Methods)
             svg.append("g")
                 .attr("transform", `translate(0, ${height})`)
                 .call(d3.axisBottom(xScale))
@@ -1342,7 +1397,7 @@
                 .attr("dx", "-0.8em")
                 .attr("dy", "0.15em");
 
-            // 绘制热力图单元格
+            // Draw heatmap cells
             attackMethods.forEach(attack => {
                 defenseMethods.forEach(defense => {
                     const value = data[attack][defense];
@@ -1387,7 +1442,7 @@
                 });
             });
 
-            // 添加轴标签
+            // Add axis labels
             svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - margin.left + 20)
